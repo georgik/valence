@@ -1,8 +1,10 @@
-use std::error::Error as StdError;
-use std::fmt::{Display, Formatter};
-use std::io;
+extern crate alloc;
 
-pub type Result<T, E = Error> = std::result::Result<T, E>;
+use alloc::boxed::Box;
+use alloc::string::{String, ToString};
+use core::fmt::{self, Display, Formatter};
+
+pub type Result<T, E = Error> = core::result::Result<T, E>;
 
 /// Errors that can occur when encoding or decoding binary NBT.
 #[derive(Debug)]
@@ -13,51 +15,52 @@ pub struct Error {
 
 #[derive(Debug)]
 enum Cause {
-    Io(io::Error),
+    Io(String),
     Owned(Box<str>),
     Static(&'static str),
 }
 
 impl Error {
-    #[allow(dead_code)]
-    pub(crate) fn new_owned(msg: impl Into<Box<str>>) -> Self {
+    /// Creates a new error with an owned string message.
+    pub fn new_owned(msg: impl Into<Box<str>>) -> Self {
         Self {
             cause: Box::new(Cause::Owned(msg.into())),
         }
     }
 
-    #[allow(dead_code)]
-    pub(crate) fn new_static(msg: &'static str) -> Self {
+    /// Creates a new error with a static string message.
+    pub fn new_static(msg: &'static str) -> Self {
         Self {
             cause: Box::new(Cause::Static(msg)),
+        }
+    }
+
+    /// Creates a new error from an I/O error description.
+    pub fn new_io(msg: impl ToString) -> Self {
+        Self {
+            cause: Box::new(Cause::Io(msg.to_string())),
         }
     }
 }
 
 impl Display for Error {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         match &*self.cause {
-            Cause::Io(e) => e.fmt(f),
-            Cause::Owned(msg) => write!(f, "{msg}"),
-            Cause::Static(msg) => write!(f, "{msg}"),
+            Cause::Io(e) => write!(f, "I/O error: {}", e),
+            Cause::Owned(msg) => write!(f, "{}", msg),
+            Cause::Static(msg) => write!(f, "{}", msg),
         }
     }
 }
 
-impl StdError for Error {
-    fn source(&self) -> Option<&(dyn StdError + 'static)> {
-        match &*self.cause {
-            Cause::Io(e) => Some(e),
-            Cause::Owned(_) => None,
-            Cause::Static(_) => None,
-        }
+impl From<&'static str> for Error {
+    fn from(msg: &'static str) -> Self {
+        Self::new_static(msg)
     }
 }
 
-impl From<io::Error> for Error {
-    fn from(e: io::Error) -> Self {
-        Self {
-            cause: Box::new(Cause::Io(e)),
-        }
+impl From<String> for Error {
+    fn from(msg: String) -> Self {
+        Self::new_io(msg)
     }
 }

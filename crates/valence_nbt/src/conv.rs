@@ -3,7 +3,7 @@
 //! While working with [`Value`], it is often necessary to convert between
 //! collections of signed and unsigned integer types due to API
 //! differences. For instance, you may be given a `&[i8]` from
-//! [`Value::ByteArray`], but functions like [`Write::write_all`] expect to
+//! [`Value::ByteArray`], but functions like [`write_all`] expect to
 //! receive a `&[u8]`.
 //!
 //! This module provides functions to perform conversions between these types
@@ -11,9 +11,13 @@
 //!
 //! [`Value`]: crate::Value
 //! [`Value::ByteArray`]: crate::Value::ByteArray
-//! [`Write::write_all`]: std::io::Write::write_all
+//! [`write_all`]: core::fmt::Write::write_all
 
-use std::mem::ManuallyDrop;
+
+extern crate alloc;
+
+use alloc::vec::Vec;
+use core::mem::ManuallyDrop;
 
 /// Converts a `Vec<u8>` into a `Vec<i8>` without cloning.
 #[inline]
@@ -41,12 +45,12 @@ pub fn i8_vec_into_u8_vec(vec: Vec<i8>) -> Vec<u8> {
 #[inline]
 pub fn u8_slice_as_i8_slice(slice: &[u8]) -> &[i8] {
     // SAFETY: i8 has the same layout as u8.
-    unsafe { std::slice::from_raw_parts(slice.as_ptr() as *const i8, slice.len()) }
+    unsafe { core::slice::from_raw_parts(slice.as_ptr() as *const i8, slice.len()) }
 }
 
 /// Converts a `&[i8]` into a `&[u8]`.
 #[inline]
 pub fn i8_slice_as_u8_slice(slice: &[i8]) -> &[u8] {
     // SAFETY: i8 has the same layout as u8.
-    unsafe { std::slice::from_raw_parts(slice.as_ptr() as *const u8, slice.len()) }
+    unsafe { core::slice::from_raw_parts(slice.as_ptr() as *const u8, slice.len()) }
 }

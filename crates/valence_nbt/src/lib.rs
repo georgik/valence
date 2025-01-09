@@ -1,6 +1,8 @@
-
 // Run locally with `RUSTDOCFLAGS="--cfg docsrs" cargo +nightly doc --all-features --open`
 #![cfg_attr(docsrs, feature(doc_cfg))]
+#![no_std]
+
+extern crate alloc;
 
 #[cfg(feature = "binary")]
 #[cfg_attr(docsrs, doc(cfg(feature = "binary")))]
@@ -61,7 +63,7 @@ pub mod value;
 ///
 /// It is also possible to specify a custom string type like this:
 /// ```
-/// # use std::borrow::Cow;
+/// # use alloc::borrow::Cow;
 ///
 /// use valence_nbt::compound;
 ///
@@ -74,18 +76,18 @@ pub mod value;
 #[macro_export]
 macro_rules! compound {
     (<$string_type:ty> $($key:expr => $value:expr),* $(,)?) => {
-        <$crate::Compound<$string_type> as ::std::iter::FromIterator<($string_type, $crate::Value<$string_type>)>>::from_iter([
+        <$crate::Compound<$string_type> as ::core::iter::FromIterator<($string_type, $crate::Value<$string_type>)>>::from_iter([
             $(
                 (
-                    ::std::convert::Into::<$string_type>::into($key),
-                    ::std::convert::Into::<$crate::Value<$string_type>>::into($value)
+                    ::core::convert::Into::<$string_type>::into($key),
+                    ::core::convert::Into::<$crate::Value<$string_type>>::into($value)
                 ),
             )*
         ])
     };
 
     ($($key:expr => $value:expr),* $(,)?) => {
-        compound!(<::std::string::String> $($key => $value),*)
+        compound!(<::alloc::string::String> $($key => $value),*)
     };
 }
 
