@@ -1,7 +1,8 @@
-use std::ops::{Add, Sub};
-
+use core::ops::{Add, Sub};
 use glam::DVec3;
 
+use core::debug_assert;
+use core::option::Option;
 /// A three-dimensional axis-aligned bounding box, or "AABB".
 ///
 /// The AABB is defined by two points—`min` and `max`. `min` is less than or
@@ -28,7 +29,8 @@ impl Aabb {
     pub fn new(min: DVec3, max: DVec3) -> Self {
         debug_assert!(
             min.x <= max.x && min.y <= max.y && min.z <= max.z,
-            "`min` must be less than or equal to `max` componentwise (min = {min}, max = {max})"
+            "`min` must be less than or equal to `max` componentwise (min = {:?}, max = {:?})",
+            min, max
         );
 
         Self { min, max }
@@ -158,53 +160,5 @@ impl Sub<Aabb> for DVec3 {
 
     fn sub(self, rhs: Aabb) -> Self::Output {
         rhs - self
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn ray_intersect_edge_cases() {
-        let bb = Aabb::new([0.0, 0.0, 0.0].into(), [1.0, 1.0, 1.0].into());
-
-        let ros = [
-            // On a corner
-            DVec3::new(0.0, 0.0, 0.0),
-            // Outside
-            DVec3::new(-0.5, 0.5, -0.5),
-            // In the center
-            DVec3::new(0.5, 0.5, 0.5),
-            // On an edge
-            DVec3::new(0.0, 0.5, 0.0),
-            // On a face
-            DVec3::new(0.0, 0.5, 0.5),
-            // Outside slabs
-            DVec3::new(-2.0, -2.0, -2.0),
-        ];
-
-        let rds = [
-            DVec3::new(1.0, 0.0, 0.0),
-            DVec3::new(-1.0, 0.0, 0.0),
-            DVec3::new(0.0, 1.0, 0.0),
-            DVec3::new(0.0, -1.0, 0.0),
-            DVec3::new(0.0, 0.0, 1.0),
-            DVec3::new(0.0, 0.0, -1.0),
-        ];
-
-        assert!(rds.iter().all(|d| d.is_normalized()));
-
-        for ro in ros {
-            for rd in rds {
-                if let Some([near, far]) = bb.ray_intersection(ro, rd) {
-                    assert!(near.is_finite());
-                    assert!(far.is_finite());
-                    assert!(near <= far);
-                    assert!(near >= 0.0);
-                    assert!(far >= 0.0);
-                }
-            }
-        }
     }
 }

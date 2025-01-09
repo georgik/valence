@@ -1,4 +1,4 @@
-#![doc = include_str!("../../README.md")]
+
 // Run locally with `RUSTDOCFLAGS="--cfg docsrs" cargo +nightly doc --all-features --open`
 #![cfg_attr(docsrs, feature(doc_cfg))]
 
