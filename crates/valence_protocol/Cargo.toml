@@ -16,17 +16,18 @@ encryption = ["dep:aes", "dep:cfb8"]
 compression = ["dep:flate2"]
 
 [dependencies]
-bevy_ecs.workspace = true                                 # TODO: make this optional
+#bevy_ecs.workspace = true                                 # TODO: make this optional
 valence_math.workspace = true
 valence_generated.workspace = true
 valence_text.workspace = true
-valence_nbt = { workspace = true, features = ["binary"] }
+#valence_nbt = { workspace = true, features = ["binary"] }
+valence_nbt = { workspace = true }
 valence_protocol_macros.workspace = true
-anyhow.workspace = true
-thiserror.workspace = true
-serde = { workspace = true, features = ["derive"] }
-byteorder.workspace = true
-uuid.workspace = true
+anyhow = {version = "1.0.95", default-features = false}
+thiserror = { version = "1.0.59", default-features = false,  optional = true }
+serde = { version = "1.0.217", default-features=false, features = ["derive", "alloc"] }
+byteorder = { workspace = true, default-features=false }
+uuid = { version = "1.11.0", default-features = false}
 valence_ident.workspace = true
 base64.workspace = true
 url.workspace = true
@@ -40,4 +41,4 @@ flate2 = { workspace = true, optional = true }
 aes = { workspace = true, optional = true }
 
 [dev-dependencies]
-rand.workspace = true
+rand = "0.8.4"

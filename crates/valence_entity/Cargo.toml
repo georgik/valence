@@ -13,15 +13,15 @@ workspace = true
 
 [dependencies]
 anyhow.workspace = true
-bevy_app.workspace = true
-bevy_ecs.workspace = true
+#bevy_app.workspace = true
+#bevy_ecs.workspace = true
 bitfield-struct.workspace = true
 derive_more.workspace = true
 valence_math.workspace = true
 paste.workspace = true
 rustc-hash.workspace = true
 tracing.workspace = true
-uuid.workspace = true
+#uuid.workspace = true
 valence_server_common.workspace = true
 valence_nbt.workspace = true
 valence_generated.workspace = true
