@@ -2,12 +2,12 @@ extern crate alloc;
 
 use alloc::borrow::{Borrow, Cow};
 use alloc::collections::BTreeMap;
-use alloc::vec::Vec;
 use core::fmt;
 use core::hash::Hash;
-use core::iter::FusedIterator;
 use core::ops::{Index, IndexMut};
 use crate::Value;
+use alloc::string::String;
+use alloc::collections::btree_map;
 
 /// A map type with [`String`] keys and [`Value`] values.
 #[derive(Clone, Default)]
@@ -166,7 +166,7 @@ where
 /// Implement standard iterator traits for Compound
 impl<'a, S> IntoIterator for &'a Compound<S> {
     type Item = (&'a S, &'a Value<S>);
-    type IntoIter = core::collections::btree_map::Iter<'a, S, Value<S>>;
+    type IntoIter = btree_map::Iter<'a, S, Value<S>>;
 
     fn into_iter(self) -> Self::IntoIter {
         self.map.iter()
@@ -176,7 +176,7 @@ impl<'a, S> IntoIterator for &'a Compound<S> {
 /// Key iterator for Compound
 #[derive(Clone, Debug)]
 pub struct Keys<'a, S> {
-    iter: core::collections::btree_map::Keys<'a, S, Value<S>>,
+    iter: btree_map::Keys<'a, S, Value<S>>,
 }
 
 impl<'a, S> Iterator for Keys<'a, S> {
@@ -190,7 +190,7 @@ impl<'a, S> Iterator for Keys<'a, S> {
 /// Value iterator for Compound
 #[derive(Clone, Debug)]
 pub struct Values<'a, S> {
-    iter: core::collections::btree_map::Values<'a, S, Value<S>>,
+    iter: btree_map::Values<'a, S, Value<S>>,
 }
 
 impl<'a, S> Iterator for Values<'a, S> {
