@@ -1,4 +1,4 @@
-use std::io::Write;
+use alloc::vec::Vec;
 
 #[cfg(feature = "encryption")]
 use aes::cipher::generic_array::GenericArray;
@@ -220,18 +220,18 @@ impl<W: WritePacket> WritePacket for &mut W {
     }
 }
 
-impl<T: WritePacket> WritePacket for bevy_ecs::world::Mut<'_, T> {
-    fn write_packet_fallible<P>(&mut self, packet: &P) -> anyhow::Result<()>
-    where
-        P: Packet + Encode,
-    {
-        self.as_mut().write_packet_fallible(packet)
-    }
-
-    fn write_packet_bytes(&mut self, bytes: &[u8]) {
-        self.as_mut().write_packet_bytes(bytes)
-    }
-}
+// impl<T: WritePacket> WritePacket for bevy_ecs::world::Mut<'_, T> {
+//     fn write_packet_fallible<P>(&mut self, packet: &P) -> anyhow::Result<()>
+//     where
+//         P: Packet + Encode,
+//     {
+//         self.as_mut().write_packet_fallible(packet)
+//     }
+//
+//     fn write_packet_bytes(&mut self, bytes: &[u8]) {
+//         self.as_mut().write_packet_bytes(bytes)
+//     }
+// }
 
 /// An implementor of [`WritePacket`] backed by a `Vec` mutable reference.
 ///

@@ -1,8 +1,10 @@
-use std::borrow::Cow;
-use std::io::Write;
-use std::rc::Rc;
-use std::sync::Arc;
+use alloc::borrow::Cow;
+use alloc::boxed::Box;
+use alloc::rc::Rc;
+use alloc::sync::Arc;
+use alloc::borrow::ToOwned;
 
+use core::fmt::Write;
 use crate::{Decode, Encode};
 
 impl<T: Encode + ?Sized> Encode for &T {

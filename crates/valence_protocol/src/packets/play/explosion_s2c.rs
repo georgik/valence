@@ -1,4 +1,4 @@
-use std::borrow::Cow;
+use alloc::borrow::Cow;
 
 use valence_math::{DVec3, Vec3};
 

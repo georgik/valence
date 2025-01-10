@@ -4,7 +4,7 @@ use syn::spanned::Spanned;
 use syn::{parse2, parse_quote, Data, DeriveInput, Error, Fields, Result};
 
 use crate::{add_trait_bounds, decode_split_for_impl, pair_variants_with_discriminants};
-
+use alloc::format;
 pub(super) fn derive_decode(item: TokenStream) -> Result<TokenStream> {
     let mut input = parse2::<DeriveInput>(item)?;
 

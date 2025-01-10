@@ -1,5 +1,5 @@
 use crate::{Bounded, Decode, Encode, Packet, VarInt};
-
+use alloc::vec::Vec;
 pub const MAX_TITLE_CHARS: usize = 128;
 pub const MAX_PAGE_CHARS: usize = 8192;
 pub const MAX_PAGES: usize = 200;

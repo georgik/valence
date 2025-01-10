@@ -1,9 +1,9 @@
-use std::borrow::Cow;
-use std::io::Write;
-
+use alloc::borrow::Cow;
+use alloc::vec::Vec;
+use alloc::string::String;
 use anyhow::bail;
-use byteorder::WriteBytesExt;
 use valence_ident::Ident;
+use core::fmt::Write;
 
 use crate::{Decode, Encode, Packet, VarInt};
 

@@ -1,5 +1,7 @@
 #![doc = include_str!("../README.md")]
+#![no_std]
 
+extern crate proc_macro;
 use proc_macro::TokenStream as StdTokenStream;
 use proc_macro2::TokenStream;
 use quote::ToTokens;
@@ -11,6 +13,16 @@ use syn::{
 mod decode;
 mod encode;
 mod packet;
+
+// Conditionally include `alloc` for no_std environments
+#[cfg(not(feature = "std"))]
+extern crate alloc;
+
+#[cfg(feature = "std")]
+use std::vec::Vec;
+
+#[cfg(not(feature = "std"))]
+use alloc::vec::Vec;
 
 #[proc_macro_derive(Encode, attributes(packet))]
 pub fn derive_encode(item: StdTokenStream) -> StdTokenStream {
@@ -36,6 +48,7 @@ pub fn derive_packet(item: StdTokenStream) -> StdTokenStream {
     }
 }
 
+// Helper functions remain unchanged
 fn pair_variants_with_discriminants(
     variants: impl IntoIterator<Item = Variant>,
 ) -> Result<Vec<(i32, Variant)>> {
@@ -75,9 +88,6 @@ fn parse_tag_attr(attrs: &[Attribute]) -> Result<Option<i32>> {
     Ok(None)
 }
 
-/// Adding our lifetime to the generics before calling `.split_for_impl()` would
-/// also add it to the resulting `ty_generics`, which we don't want. So I'm
-/// doing this hack.
 fn decode_split_for_impl(
     mut generics: Generics,
     lifetime: Lifetime,

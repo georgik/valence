@@ -1,6 +1,9 @@
-use std::io::Write;
+
 
 use crate::{Decode, Encode, ItemStack, Packet, VarInt};
+use alloc::vec;
+use alloc::vec::Vec;
+use core::fmt::Write;
 
 #[derive(Clone, PartialEq, Debug, Packet)]
 pub struct EntityEquipmentUpdateS2c {

@@ -1,11 +1,19 @@
-use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
-use std::hash::{BuildHasher, Hash};
-use std::io::Write;
+
 
 use anyhow::ensure;
+use alloc::collections::BTreeMap;
+use core::hash::Hash;
+use core::hash::BuildHasher;
+use hashbrown::HashMap;
+#[cfg(not(feature = "std"))]
+use hashbrown::HashSet;
 
+#[cfg(feature = "std")]
+use std::collections::HashSet;
 use crate::impls::cautious_capacity;
 use crate::{Decode, Encode, VarInt};
+use alloc::collections::BTreeSet;
+use core::fmt::Write;
 
 impl<T> Encode for BTreeSet<T>
 where

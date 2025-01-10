@@ -1,11 +1,12 @@
-use std::borrow::Cow;
-use std::io::Write;
+use alloc::borrow::Cow;
+
 
 pub use valence_generated::sound::Sound;
 use valence_ident::Ident;
 
 use crate::var_int::VarInt;
 use crate::{Decode, Encode};
+use core::fmt::Write;
 
 #[derive(Clone, PartialEq, Debug)]
 pub enum SoundId<'a> {

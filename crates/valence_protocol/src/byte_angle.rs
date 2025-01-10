@@ -1,6 +1,6 @@
-use std::f32::consts::TAU;
-use std::fmt;
-use std::io::Write;
+use core::fmt;
+use core::f32::consts::TAU;
+use core::fmt::Write;
 
 use crate::{Decode, Encode};
 

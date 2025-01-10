@@ -1,8 +1,8 @@
-use bevy_ecs::prelude::*;
+// use bevy_ecs::prelude::*;
 
 use crate::{Decode, Encode};
 
-#[derive(Copy, Clone, PartialEq, Eq, Debug, Encode, Decode, Component)]
+#[derive(Copy, Clone, PartialEq, Eq, Debug, Encode, Decode)]
 pub enum Direction {
     /// -Y
     Down,

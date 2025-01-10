@@ -1,9 +1,10 @@
-use std::io::Write;
+
 
 pub use valence_generated::item::ItemKind;
 use valence_nbt::Compound;
 
 use crate::{Decode, Encode};
+use core::fmt::Write;
 
 /// A stack of items in an inventory.
 #[derive(Clone, PartialEq, Debug, Default)]

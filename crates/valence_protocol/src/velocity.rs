@@ -1,7 +1,7 @@
-use std::fmt;
+// use std::fmt;
 
 use derive_more::{From, Into};
-
+use core::fmt;
 use crate::{Decode, Encode};
 
 /// Quantized entity velocity.

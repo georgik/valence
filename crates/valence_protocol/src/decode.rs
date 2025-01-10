@@ -54,7 +54,7 @@ impl PacketDecoder {
 
         #[cfg(feature = "compression")]
         if self.threshold.0 >= 0 {
-            use std::io::Write;
+
 
             use bytes::BufMut;
             use flate2::write::ZlibDecoder;

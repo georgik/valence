@@ -1,11 +1,13 @@
-use std::borrow::Cow;
-use std::io::Write;
+use alloc::borrow::Cow;
+
 
 use anyhow::bail;
 use bitfield_struct::bitfield;
 use valence_text::Text;
 
 use crate::{Decode, Encode, Packet};
+use alloc::vec::Vec;
+use core::fmt::Write;
 
 #[derive(Clone, Debug, Encode, Decode, Packet)]
 pub struct TeamS2c<'a> {

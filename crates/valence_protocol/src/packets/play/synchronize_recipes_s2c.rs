@@ -1,10 +1,11 @@
-use std::borrow::Cow;
-use std::io::Write;
+use alloc::borrow::Cow;
+
 
 use anyhow::ensure;
 use valence_ident::Ident;
 
 use crate::{Decode, Encode, ItemStack, Packet, RawBytes};
+use core::fmt::Write;
 
 #[derive(Clone, Debug, Encode, Decode, Packet)]
 pub struct SynchronizeRecipesS2c<'a> {

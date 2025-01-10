@@ -1,8 +1,8 @@
-use std::io::Write;
-use std::slice;
 
 use anyhow::ensure;
-use byteorder::{BigEndian, ReadBytesExt, WriteBytesExt};
+use byteorder::BigEndian;
+use core::fmt::Write;
+use core::slice;
 
 use crate::{Decode, Encode};
 

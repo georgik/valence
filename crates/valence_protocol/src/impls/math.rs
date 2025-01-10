@@ -1,6 +1,7 @@
-use std::io::Write;
+
 
 use valence_math::*;
+use core::fmt::Write;
 
 use crate::{Decode, Encode};
 

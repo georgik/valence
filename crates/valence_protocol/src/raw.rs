@@ -1,8 +1,9 @@
-use std::io::Write;
-use std::mem;
 
+// use std::mem;
+use core::mem;
 use anyhow::ensure;
 use derive_more::{Deref, DerefMut, From, Into};
+use core::fmt::Write;
 
 use crate::{Bounded, Decode, Encode};
 

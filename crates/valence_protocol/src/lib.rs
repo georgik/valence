@@ -1,4 +1,8 @@
 #![doc = include_str!("../README.md")]
+#![no_std]
+extern crate alloc;
+use core::fmt::Write;
+use core::fmt;
 
 /// Used only by macros. Not public API.
 #[doc(hidden)]
@@ -37,7 +41,7 @@ pub mod var_int;
 mod var_long;
 mod velocity;
 
-use std::io::Write;
+
 
 use anyhow::Context;
 pub use array::FixedArray;
@@ -255,7 +259,7 @@ pub trait Decode<'a>: Sized {
 /// the body of the packet. If present, the implementations of [`Encode`] and
 /// [`Decode`] on `Self` are expected to only encode/decode the _body_ of this
 /// packet without the leading ID.
-pub trait Packet: std::fmt::Debug {
+pub trait Packet: fmt::Debug {
     /// The leading `VarInt` ID of this packet.
     const ID: i32;
     /// The name of this packet for debugging purposes.
@@ -299,7 +303,7 @@ pub enum PacketState {
 #[allow(dead_code)]
 #[cfg(test)]
 mod tests {
-    use std::borrow::Cow;
+    use alloc::borrow::Cow;
 
     use bytes::BytesMut;
 

@@ -1,5 +1,6 @@
-use std::borrow::Cow;
-use std::collections::BTreeSet;
+use alloc::borrow::Cow;
+// use std::collections::BTreeSet;
+use alloc::collections::BTreeSet;
 
 use valence_ident::Ident;
 use valence_nbt::Compound;

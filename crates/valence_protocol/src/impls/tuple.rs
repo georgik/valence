@@ -1,4 +1,4 @@
-use std::io::Write;
+use core::fmt::Write;
 
 use crate::{Decode, Encode};
 

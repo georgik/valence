@@ -3,6 +3,8 @@ use serde::{Deserialize, Serialize};
 use url::Url;
 
 use crate::{Decode, Encode};
+use alloc::string::String;
+use core::fmt::Write;
 
 /// A property from the game profile.
 #[derive(Clone, PartialEq, Eq, Debug, Serialize, Deserialize, Encode, Decode)]

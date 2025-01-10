@@ -1,10 +1,9 @@
 use heck::ToShoutySnakeCase;
 use proc_macro2::{Ident, Span, TokenStream};
 use quote::quote;
-use syn::spanned::Spanned;
-use syn::{parse2, parse_quote, Attribute, DeriveInput, Error, Expr, LitInt, LitStr, Result};
+use syn::{parse2, parse_quote, Attribute, DeriveInput, Error, Expr, LitInt, LitStr, Result, spanned::Spanned};
 
-use crate::add_trait_bounds;
+use crate::{add_trait_bounds, alloc::string::ToString};
 
 pub(super) fn derive_packet(item: TokenStream) -> Result<TokenStream> {
     let mut input = parse2::<DeriveInput>(item)?;
@@ -32,7 +31,8 @@ pub(super) fn derive_packet(item: TokenStream) -> Result<TokenStream> {
         },
     };
 
-    add_trait_bounds(&mut input.generics, quote!(::std::fmt::Debug));
+    // Replace `std::fmt::Debug` with `core::fmt::Debug` for no_std compatibility
+    add_trait_bounds(&mut input.generics, quote!(::core::fmt::Debug));
 
     let (impl_generics, ty_generics, where_clause) = input.generics.split_for_impl();
 

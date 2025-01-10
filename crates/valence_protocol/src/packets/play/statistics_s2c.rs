@@ -1,4 +1,5 @@
 use crate::{Decode, Encode, Packet, VarInt};
+use alloc::vec::Vec;
 
 #[derive(Clone, Debug, Encode, Decode, Packet)]
 pub struct StatisticsS2c {

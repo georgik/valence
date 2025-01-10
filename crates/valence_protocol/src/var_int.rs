@@ -1,10 +1,30 @@
-use std::io::{Read, Write};
+// use std::io::{Read, Write};
 
 use anyhow::bail;
-use byteorder::ReadBytesExt;
 use derive_more::{Deref, DerefMut, From, Into};
 use serde::{Deserialize, Serialize};
-use thiserror::Error;
+// use thiserror::Error;
+use core::fmt;
+use core::fmt::Write;
+
+#[derive(Copy, Clone, PartialEq, Eq, Debug)]
+pub enum VarIntDecodeError {
+    Incomplete,
+    TooLarge,
+}
+
+impl fmt::Display for VarIntDecodeError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            VarIntDecodeError::Incomplete => write!(f, "incomplete VarInt decode"),
+            VarIntDecodeError::TooLarge => write!(f, "VarInt is too large"),
+        }
+    }
+}
+
+#[cfg(feature = "std")]
+impl std::error::Error for VarIntDecodeError {}
+
 
 use crate::{Decode, Encode};
 
@@ -58,13 +78,13 @@ impl VarInt {
     }
 }
 
-#[derive(Copy, Clone, PartialEq, Eq, Debug, Error)]
-pub enum VarIntDecodeError {
-    #[error("incomplete VarInt decode")]
-    Incomplete,
-    #[error("VarInt is too large")]
-    TooLarge,
-}
+// #[derive(Copy, Clone, PartialEq, Eq, Debug, Error)]
+// pub enum VarIntDecodeError {
+//     #[error("incomplete VarInt decode")]
+//     Incomplete,
+//     #[error("VarInt is too large")]
+//     TooLarge,
+// }
 
 impl Encode for VarInt {
     // Adapted from VarInt-Simd encode
