@@ -13,7 +13,7 @@ workspace = true
 
 [dependencies]
 serde = { version = "1.0.217", default-features=false, features = ["derive", "alloc"] }
-serde_json.workspace = true
+serde_json = { version = "1.0.135", default-features = false}
 thiserror = { version = "2.0.10", default-features = false}
 #uuid = { workspace = true, features = ["serde"] }
 valence_ident.workspace = true
