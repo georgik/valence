@@ -579,6 +579,8 @@ pub(crate) fn build() -> anyhow::Result<TokenStream> {
 
     Ok(quote! {
         use valence_math::{Aabb, DVec3};
+        use core::fmt;
+        use core::fmt::Display;
 
         /// Represents the state of a block. This does not include block entity data such as
         /// the text on a sign, the design on a banner, or the content of a spawner.
