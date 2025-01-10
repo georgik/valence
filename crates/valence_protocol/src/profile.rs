@@ -1,10 +1,10 @@
 use base64::prelude::*;
 use serde::{Deserialize, Serialize};
 use url::Url;
+use alloc::vec::Vec;
 
 use crate::{Decode, Encode};
 use alloc::string::String;
-use core::fmt::Write;
 
 /// A property from the game profile.
 #[derive(Clone, PartialEq, Eq, Debug, Serialize, Deserialize, Encode, Decode)]
@@ -30,31 +30,38 @@ impl PlayerTextures {
     ///
     /// "textures" is a base64 string of JSON data.
     pub fn try_from_textures(textures: &str) -> anyhow::Result<Self> {
-        #[derive(Debug, Deserialize)]
+        // TODO
+        // #[derive(Debug, Deserialize)]
+        #[derive(Debug)]
         struct Textures {
             textures: PlayerTexturesPayload,
         }
 
-        #[derive(Debug, Deserialize)]
-        #[serde(rename_all = "UPPERCASE")]
+        // TODO
+        // #[derive(Debug, Deserialize)]
+        #[derive(Debug)]
+        // #[serde(rename_all = "UPPERCASE")]
         struct PlayerTexturesPayload {
             skin: TextureUrl,
-            #[serde(default)]
+            // #[serde(default)]
             cape: Option<TextureUrl>,
         }
 
-        #[derive(Debug, Deserialize)]
+        // TODO
+        // #[derive(Debug, Deserialize)]
+        #[derive(Debug)]
         struct TextureUrl {
             url: Url,
         }
 
-        let decoded = BASE64_STANDARD.decode(textures.as_bytes())?;
+        // let decoded = BASE64_STANDARD.decode(textures.as_bytes())?;
+        let decoded: Vec<u8> = Vec::new();
+        todo!();
+        // let Textures { textures } = serde_json::from_slice(&decoded)?;
 
-        let Textures { textures } = serde_json::from_slice(&decoded)?;
-
-        Ok(Self {
-            skin: textures.skin.url,
-            cape: textures.cape.map(|t| t.url),
-        })
+        // Ok(Self {
+        //     skin: textures.skin.url,
+        //     cape: textures.cape.map(|t| t.url),
+        // })
     }
 }

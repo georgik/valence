@@ -7,6 +7,7 @@ use aes::cipher::{BlockEncryptMut, BlockSizeUser, KeyIvInit};
 use anyhow::ensure;
 use bytes::{BufMut, BytesMut};
 use tracing::warn;
+use crate::writer::Write;
 
 use crate::var_int::VarInt;
 use crate::{CompressionThreshold, Encode, Packet, MAX_PACKET_SIZE};
@@ -65,7 +66,8 @@ impl PacketEncoder {
     {
         let start_len = self.buf.len();
 
-        pkt.encode_with_id((&mut self.buf).writer())?;
+        // TODO
+        // pkt.encode_with_id((&mut self.buf).writer())?;
 
         let data_len = self.buf.len() - start_len;
 
@@ -140,7 +142,8 @@ impl PacketEncoder {
             .copy_within(start_len..start_len + data_len, start_len + packet_len_size);
 
         let front = &mut self.buf[start_len..];
-        VarInt(packet_len as i32).encode(front)?;
+        // TODO
+        // VarInt(packet_len as i32).encode(&front)?;
 
         Ok(())
     }
@@ -281,9 +284,10 @@ impl WritePacket for PacketWriter<'_> {
     }
 
     fn write_packet_bytes(&mut self, bytes: &[u8]) {
-        if let Err(e) = self.buf.write_all(bytes) {
-            warn!("failed to write packet bytes: {e:#}");
-        }
+        // TODO
+        // if let Err(e) = self.buf.write_all(bytes) {
+        //     warn!("failed to write packet bytes: {e:#}");
+        // }
     }
 }
 
@@ -306,7 +310,8 @@ where
 {
     let start_len = buf.len();
 
-    pkt.encode_with_id(&mut *buf)?;
+    // TODO
+    // pkt.encode_with_id(&mut *buf)?;
 
     let packet_len = buf.len() - start_len;
 
@@ -324,7 +329,8 @@ where
     );
 
     let front = &mut buf[start_len..];
-    VarInt(packet_len as i32).encode(front)?;
+    // TODO
+    // VarInt(packet_len as i32).encode(front)?;
 
     Ok(())
 }

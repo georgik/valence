@@ -1,6 +1,6 @@
 
 use crate::{Decode, Encode};
-use core::fmt::Write;
+use crate::writer::Write;
 use core::fmt;
 
 // TODO: when better const exprs are available, compute BYTE_COUNT from

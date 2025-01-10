@@ -1,5 +1,5 @@
 use core::fmt;
-use core::fmt::Write;
+use crate::writer::Write;
 use crate::Encode;
 use crate::Decode;
 
@@ -46,6 +46,21 @@ impl BlockPos {
     }
 }
 
+impl Encode for BlockPos {
+    fn encode(&self, w: impl Write) -> anyhow::Result<()> {
+        let packet = self.packed().unwrap();
+        packet.encode(w)
+    }
+}
+
+impl Decode <'_> for BlockPos {
+    fn decode(r: &mut &[u8]) -> anyhow::Result<Self> {
+        todo!("Decode BlockPos");
+        // PackedBlockPos::decode(r).map(Into::into)
+    }
+
+}
+
 #[bitfield(u64)]
 #[derive(PartialEq, Eq, PartialOrd, Ord)]
 pub struct PackedBlockPos {
@@ -60,10 +75,10 @@ pub struct PackedBlockPos {
 impl Encode for PackedBlockPos {
     fn encode(&self, mut w: impl Write) -> anyhow::Result<()> {
         let mut bytes = [0u8; 8];
-        bytes[0..4].copy_from_slice(&self.x.to_le_bytes());
-        bytes[4..6].copy_from_slice(&self.y.to_le_bytes());
-        bytes[6..8].copy_from_slice(&self.z.to_le_bytes());
-        w.write_all(&bytes)?;
+        bytes[0..4].copy_from_slice(&self.x().to_le_bytes());
+        bytes[4..6].copy_from_slice(&self.y().to_le_bytes());
+        bytes[6..8].copy_from_slice(&self.z().to_le_bytes());
+        w.write_all(&bytes);
         Ok(())
     }
 }
@@ -73,6 +88,10 @@ impl Decode<'_> for PackedBlockPos {
         let x = i32::from_le_bytes(r[0..4].try_into()?);
         let y = i32::from_le_bytes(r[4..6].try_into()?);
         let z = i32::from_le_bytes(r[6..8].try_into()?);
-        Ok(Self { x, y, z })
+
+        Ok(PackedBlockPos::new()
+            .with_x(x)
+            .with_y(y)
+            .with_z(z))
     }
 }

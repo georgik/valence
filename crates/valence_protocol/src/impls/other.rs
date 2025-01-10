@@ -1,12 +1,12 @@
 
-use core::fmt::Write;
+use crate::writer::Write;
 use anyhow::Context;
 use uuid::Uuid;
 use valence_generated::block::{BlockEntityKind, BlockKind, BlockState};
 use valence_generated::item::ItemKind;
 use valence_ident::{Ident, IdentError};
 use valence_nbt::Compound;
-
+use crate::alloc::string::ToString;
 use crate::{Decode, Encode, VarInt};
 use alloc::format;
 
@@ -48,10 +48,11 @@ impl<'a> Decode<'a> for Uuid {
 fn custom_encode_to_binary(compound: &Compound, mut w: impl Write) -> anyhow::Result<()> {
     // Example: Custom encoding logic for no_std environments
     // Replace this with actual encoding logic based on your data format.
-    for (key, value) in compound.iter() {
-        // Write the key and value (you'll need to implement the actual encoding logic here).
-        write!(w, "{}: {}\n", key, value).map_err(|e| anyhow::anyhow!(e))?;
-    }
+    // TODO
+    // for (key, value) in compound.iter() {
+    //     // Write the key and value (you'll need to implement the actual encoding logic here).
+    //     write!(w, "{}: {}\n", key, value).map_err(|e| anyhow::anyhow!(e))?;
+    // }
     Ok(())
 }
 
@@ -113,7 +114,8 @@ fn custom_decode_from_binary(r: &mut &[u8]) -> anyhow::Result<Compound> {
         let value = r[0];
         *r = &r[1..];
 
-        compound.insert(key.to_string(), value.into());
+        // TODO
+        // compound.insert(key.to_string(), value.into());
     }
 
     Ok(compound)

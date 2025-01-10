@@ -7,7 +7,7 @@ use valence_text::Text;
 
 use crate::{Decode, Encode, Packet};
 use alloc::vec::Vec;
-use core::fmt::Write;
+use crate::writer::Write;
 
 #[derive(Clone, Debug, Encode, Decode, Packet)]
 pub struct TeamS2c<'a> {

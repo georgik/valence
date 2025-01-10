@@ -1,5 +1,5 @@
 use alloc::borrow::Cow;
-use core::fmt::Write;
+use crate::writer::Write;
 
 use bitfield_struct::bitfield;
 use uuid::Uuid;

@@ -1,10 +1,11 @@
 
 use anyhow::ensure;
 use byteorder::BigEndian;
-use core::fmt::Write;
+use crate::writer::Write;
 use core::slice;
 
 use crate::{Decode, Encode};
+use crate::var_int::Read;
 
 impl Encode for bool {
     fn encode(&self, mut w: impl Write) -> anyhow::Result<()> {
@@ -21,9 +22,11 @@ impl Encode for bool {
 
 impl Decode<'_> for bool {
     fn decode(r: &mut &[u8]) -> anyhow::Result<Self> {
-        let n = r.read_u8()?;
-        ensure!(n <= 1, "decoded boolean byte is not 0 or 1 (got {n})");
-        Ok(n == 1)
+        // TODO
+        // let n = r.read_u8()?;
+        // ensure!(n <= 1, "decoded boolean byte is not 0 or 1 (got {n})");
+        // Ok(n == 1)
+        Ok(true)
     }
 }
 
@@ -39,13 +42,17 @@ impl Encode for u8 {
 
 impl Decode<'_> for u8 {
     fn decode(r: &mut &[u8]) -> anyhow::Result<Self> {
-        Ok(r.read_u8()?)
+        // Ok(r.read_u8()?)
+        // TODO
+        Ok(0)
     }
 }
 
 impl Encode for i8 {
     fn encode(&self, mut w: impl Write) -> anyhow::Result<()> {
-        Ok(w.write_i8(*self)?)
+        // TODO
+        // Ok(w.write_i8(*self)?)
+        Ok(())
     }
 
     fn encode_slice(slice: &[i8], mut w: impl Write) -> anyhow::Result<()> {
@@ -57,103 +64,137 @@ impl Encode for i8 {
 
 impl Decode<'_> for i8 {
     fn decode(r: &mut &[u8]) -> anyhow::Result<Self> {
-        Ok(r.read_i8()?)
+        // TODO
+        // Ok(r.read_i8()?)
+        Ok(0)
     }
 }
 
 impl Encode for u16 {
     fn encode(&self, mut w: impl Write) -> anyhow::Result<()> {
-        Ok(w.write_u16::<BigEndian>(*self)?)
+        // TODO
+        // Ok(w.write_u16::<BigEndian>(*self)?)
+        Ok(())
     }
 }
 
 impl Decode<'_> for u16 {
     fn decode(r: &mut &[u8]) -> anyhow::Result<Self> {
-        Ok(r.read_u16::<BigEndian>()?)
+        // Ok(r.read_u16::<BigEndian>()?)
+        // TODO
+        Ok(0)
     }
 }
 
 impl Encode for i16 {
     fn encode(&self, mut w: impl Write) -> anyhow::Result<()> {
-        Ok(w.write_i16::<BigEndian>(*self)?)
+        // TODO
+        //Ok(w.write_i16::<BigEndian>(*self)?)
+        Ok(())
     }
 }
 
 impl Decode<'_> for i16 {
     fn decode(r: &mut &[u8]) -> anyhow::Result<Self> {
-        Ok(r.read_i16::<BigEndian>()?)
+        //TODO
+        // Ok(r.read_i16::<BigEndian>()?)
+        Ok(0)
     }
 }
 
 impl Encode for u32 {
     fn encode(&self, mut w: impl Write) -> anyhow::Result<()> {
-        Ok(w.write_u32::<BigEndian>(*self)?)
+        //TODO
+        // Ok(w.write_u32::<BigEndian>(*self)?)
+        Ok(())
     }
 }
 
 impl Decode<'_> for u32 {
     fn decode(r: &mut &[u8]) -> anyhow::Result<Self> {
-        Ok(r.read_u32::<BigEndian>()?)
+        //TODO
+        // Ok(r.read_u32::<BigEndian>()?)
+        Ok(0)
     }
 }
 
 impl Encode for i32 {
     fn encode(&self, mut w: impl Write) -> anyhow::Result<()> {
-        Ok(w.write_i32::<BigEndian>(*self)?)
+        // TODO
+        // Ok(w.write_i32::<BigEndian>(*self)?)
+        Ok(())
     }
 }
 
 impl Decode<'_> for i32 {
     fn decode(r: &mut &'_ [u8]) -> anyhow::Result<Self> {
-        Ok(r.read_i32::<BigEndian>()?)
+        // TODO
+        //Ok(r.read_i32::<BigEndian>()?)
+        Ok(0)
     }
 }
 
 impl Encode for u64 {
     fn encode(&self, mut w: impl Write) -> anyhow::Result<()> {
-        Ok(w.write_u64::<BigEndian>(*self)?)
+        // TODO
+        //Ok(w.write_u64::<BigEndian>(*self)?)
+        Ok(())
     }
 }
 
 impl Decode<'_> for u64 {
     fn decode(r: &mut &[u8]) -> anyhow::Result<Self> {
-        Ok(r.read_u64::<BigEndian>()?)
+        // TODO
+        //Ok(r.read_u64::<BigEndian>()?)
+        Ok(0)
     }
 }
 
 impl Encode for i64 {
     fn encode(&self, mut w: impl Write) -> anyhow::Result<()> {
-        Ok(w.write_i64::<BigEndian>(*self)?)
+        //TODO
+        //Ok(w.write_i64::<BigEndian>(*self)?)
+        Ok(())
     }
 }
 
 impl Decode<'_> for i64 {
     fn decode(r: &mut &[u8]) -> anyhow::Result<Self> {
-        Ok(r.read_i64::<BigEndian>()?)
+        // TODO
+        // Ok(r.read_i64::<BigEndian>()?)
+        Ok(0)
     }
 }
 
 impl Encode for u128 {
     fn encode(&self, mut w: impl Write) -> anyhow::Result<()> {
-        Ok(w.write_u128::<BigEndian>(*self)?)
+        // TODO
+        //Ok(w.write_u128::<BigEndian>(*self)?)
+        Ok(())
     }
 }
 
 impl Decode<'_> for u128 {
     fn decode(r: &mut &[u8]) -> anyhow::Result<Self> {
-        Ok(r.read_u128::<BigEndian>()?)
+        // TODO
+        // Ok(r.read_u128::<BigEndian>()?)
+        Ok(0)
     }
 }
 
 impl Encode for i128 {
     fn encode(&self, mut w: impl Write) -> anyhow::Result<()> {
-        Ok(w.write_i128::<BigEndian>(*self)?)
+        // TODO
+        // Ok(w.write_i128::<BigEndian>(*self)?)
+        Ok(())
     }
 }
 
 impl Decode<'_> for i128 {
     fn decode(r: &mut &'_ [u8]) -> anyhow::Result<Self> {
-        Ok(r.read_i128::<BigEndian>()?)
+        // TODO
+        // Ok(r.read_i128::<BigEndian>()?)
+        Ok(0)
     }
 }
 
@@ -164,15 +205,19 @@ impl Encode for f32 {
             "attempt to encode non-finite f32 ({})",
             self
         );
-        Ok(w.write_f32::<BigEndian>(*self)?)
+        // TODO
+        // Ok(w.write_f32::<BigEndian>(*self)?)
+        Ok(())
     }
 }
 
 impl Decode<'_> for f32 {
     fn decode(r: &mut &[u8]) -> anyhow::Result<Self> {
-        let f = r.read_f32::<BigEndian>()?;
-        ensure!(f.is_finite(), "attempt to decode non-finite f32 ({f})");
-        Ok(f)
+        // TODO
+        // let f = r.read_f32::<BigEndian>()?;
+        // ensure!(f.is_finite(), "attempt to decode non-finite f32 ({f})");
+        // Ok(f)
+        Ok(0.0)
     }
 }
 
@@ -183,14 +228,18 @@ impl Encode for f64 {
             "attempt to encode non-finite f64 ({})",
             self
         );
-        Ok(w.write_f64::<BigEndian>(*self)?)
+        // TODO
+        // Ok(w.write_f64::<BigEndian>(*self)?)
+        Ok(())
     }
 }
 
 impl Decode<'_> for f64 {
     fn decode(r: &mut &[u8]) -> anyhow::Result<Self> {
-        let f = r.read_f64::<BigEndian>()?;
-        ensure!(f.is_finite(), "attempt to decode non-finite f64 ({f})");
-        Ok(f)
+        // let f = r.read_f64::<BigEndian>()?;
+        // ensure!(f.is_finite(), "attempt to decode non-finite f64 ({f})");
+        // Ok(f)
+        // TODO
+        Ok(0.0)
     }
 }

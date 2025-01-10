@@ -1,6 +1,6 @@
 use valence_math::DVec3;
 
-use crate::block_pos::BlockPos;
+use crate::BlockPos;
 use crate::chunk_section_pos::ChunkSectionPos;
 use crate::{BiomePos, Decode, Encode};
 
@@ -54,8 +54,11 @@ impl From<BiomePos> for ChunkPos {
 impl From<DVec3> for ChunkPos {
     fn from(pos: DVec3) -> Self {
         Self {
-            x: (pos.x / 16.0).floor() as i32,
-            z: (pos.z / 16.0).floor() as i32,
+            // x: (pos.x / 16.0).floor() as i32,
+            // z: (pos.z / 16.0).floor() as i32,
+            x: (pos.x / 16.0) as i32,
+            z: (pos.z / 16.0) as i32,
+
         }
     }
 }

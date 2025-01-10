@@ -13,7 +13,7 @@ use std::collections::HashSet;
 use crate::impls::cautious_capacity;
 use crate::{Decode, Encode, VarInt};
 use alloc::collections::BTreeSet;
-use core::fmt::Write;
+use crate::writer::Write;
 
 impl<T> Encode for BTreeSet<T>
 where

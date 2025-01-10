@@ -1,5 +1,5 @@
 use crate::{Bounded, Decode, Encode, Packet, PacketState, VarInt};
-use core::fmt::Write;
+
 #[derive(Clone, Debug, Encode, Decode, Packet)]
 #[packet(state = PacketState::Handshaking)]
 pub struct HandshakeC2s<'a> {

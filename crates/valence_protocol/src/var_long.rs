@@ -3,7 +3,8 @@
 use anyhow::bail;
 use derive_more::{From, Into};
 use serde::{Deserialize, Serialize};
-use core::fmt::Write;
+use crate::writer::Write;
+use crate::var_int::Read;
 
 use crate::{Decode, Encode};
 
@@ -123,15 +124,17 @@ impl Encode for VarLong {
 
 impl Decode<'_> for VarLong {
     fn decode(r: &mut &[u8]) -> anyhow::Result<Self> {
-        let mut val = 0;
-        for i in 0..Self::MAX_SIZE {
-            let byte = r.read_u8()?;
-            val |= (i64::from(byte) & 0b01111111) << (i * 7);
-            if byte & 0b10000000 == 0 {
-                return Ok(VarLong(val));
-            }
-        }
-        bail!("VarInt is too large")
+        // TODO
+        // let mut val = 0;
+        // for i in 0..Self::MAX_SIZE {
+        //     let byte = r.read_u8()?;
+        //     val |= (i64::from(byte) & 0b01111111) << (i * 7);
+        //     if byte & 0b10000000 == 0 {
+        //         return Ok(VarLong(val));
+        //     }
+        // }
+        // bail!("VarInt is too large")
+        todo!()
     }
 }
 

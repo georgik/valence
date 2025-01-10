@@ -1,7 +1,7 @@
 use core::fmt;
 use bitfield_struct::bitfield;
 use derive_more::From;
-use core::fmt::Write;
+use crate::writer::Write;
 
 #[derive(Copy, Clone, PartialEq, Eq, Debug, From)]
 pub struct Error(pub ChunkSectionPos);
@@ -50,7 +50,7 @@ impl fmt::Display for ChunkSectionPos {
 
 impl Encode for ChunkSectionPos {
     fn encode(&self, w: impl Write) -> anyhow::Result<()> {
-        self.packed()?.encode(w)
+        self.packed().unwrap().encode(w)
     }
 }
 

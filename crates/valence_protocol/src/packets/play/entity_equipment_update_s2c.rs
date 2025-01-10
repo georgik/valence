@@ -3,7 +3,7 @@
 use crate::{Decode, Encode, ItemStack, Packet, VarInt};
 use alloc::vec;
 use alloc::vec::Vec;
-use core::fmt::Write;
+use crate::writer::Write;
 
 #[derive(Clone, PartialEq, Debug, Packet)]
 pub struct EntityEquipmentUpdateS2c {

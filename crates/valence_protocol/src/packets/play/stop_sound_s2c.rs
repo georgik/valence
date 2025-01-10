@@ -5,7 +5,7 @@ use valence_ident::Ident;
 
 use crate::sound::SoundCategory;
 use crate::{Decode, Encode, Packet};
-use core::fmt::Write;
+use crate::writer::Write;
 
 #[derive(Clone, PartialEq, Debug, Packet)]
 pub struct StopSoundS2c<'a> {

@@ -4,7 +4,7 @@ use alloc::rc::Rc;
 use alloc::sync::Arc;
 use alloc::borrow::ToOwned;
 
-use core::fmt::Write;
+use crate::writer::Write;
 use crate::{Decode, Encode};
 
 impl<T: Encode + ?Sized> Encode for &T {

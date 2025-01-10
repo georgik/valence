@@ -2,7 +2,7 @@
 
 use alloc::borrow::Cow;
 
-use core::fmt::Write;
+use crate::writer::Write;
 use valence_ident::Ident;
 use valence_text::Text;
 

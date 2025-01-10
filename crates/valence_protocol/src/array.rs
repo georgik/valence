@@ -3,7 +3,7 @@
 use anyhow::ensure;
 
 use crate::var_int::VarInt;
-use core::fmt::Write;
+use crate::Write;
 use crate::{Decode, Encode};
 
 /// A fixed-size array encoded and decoded with a [`VarInt`] length prefix.

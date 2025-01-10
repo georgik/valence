@@ -1,8 +1,10 @@
 
 // use std::str::FromStr;
-use core::fmt::Write;
+// use crate::writer::Write;
+use crate::writer::Write;
 use alloc::string::String;
 use alloc::boxed::Box;
+use core::str::FromStr;
 
 use anyhow::{ensure, Context};
 use valence_text::Text;
@@ -50,7 +52,9 @@ impl<'a, const MAX_CHARS: usize> Decode<'a> for Bounded<&'a str, MAX_CHARS> {
         );
 
         let (res, remaining) = r.split_at(len);
-        let res = str::from_utf8(res)?;
+        // let res = str::from_utf8(res)?;
+        // TODO
+        let res = "TODO";
 
         let char_count = res.encode_utf16().count();
         ensure!(

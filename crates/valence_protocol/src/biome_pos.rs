@@ -1,5 +1,5 @@
 use valence_math::DVec3;
-
+use libm::floor;
 use crate::BlockPos;
 
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Default, Debug)]
@@ -28,9 +28,9 @@ impl From<BlockPos> for BiomePos {
 impl From<DVec3> for BiomePos {
     fn from(pos: DVec3) -> Self {
         Self {
-            x: (pos.x / 4.0).floor() as i32,
-            y: (pos.y / 4.0).floor() as i32,
-            z: (pos.z / 4.0).floor() as i32,
+            x: floor(pos.x / 4.0) as i32,
+            y: floor(pos.y / 4.0) as i32,
+            z: floor(pos.z / 4.0) as i32,
         }
     }
 }

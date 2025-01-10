@@ -26,6 +26,7 @@ valence_text.workspace = true
 #valence_nbt = { workspace = true, features = ["binary"] }
 valence_nbt = { workspace = true }
 valence_protocol_macros.workspace = true
+embedded-io = "0.6.1"
 anyhow = {version = "1.0.95", default-features = false}
 thiserror = { version = "1.0.59", default-features = false,  optional = true }
 serde = { version = "1.0.217", default-features=false, features = ["derive", "alloc"] }
@@ -45,6 +46,7 @@ flate2 = { workspace = true, optional = true }
 aes = { workspace = true, optional = true }
 hashbrown = { version = "0.15.2", default-features = false }
 esp-alloc = "0.5.0"
+libm = "0.2.11"
 
 [dev-dependencies]
 rand = "0.8.4"

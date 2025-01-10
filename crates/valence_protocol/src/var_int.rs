@@ -1,6 +1,6 @@
 // Replace `std` usage with `core` or custom implementations for `no_std`.
 use core::fmt;
-use core::fmt::Write;
+use crate::writer::Write;
 
 // Use alloc for heap-allocated collections in no_std contexts.
 extern crate alloc;
@@ -84,17 +84,21 @@ impl VarInt {
     }
 
     /// Decodes a `VarInt` with partial input support.
-    pub fn decode_partial<R: Read>(mut r: R) -> Result<i32, VarIntDecodeError> {
-        let mut val = 0;
-        for i in 0..Self::MAX_SIZE {
-            let byte = r.read_u8()?;
-            val |= (i32::from(byte) & 0b01111111) << (i * 7);
-            if byte & 0b10000000 == 0 {
-                return Ok(val);
-            }
-        }
-        Err(VarIntDecodeError::TooLarge)
+    pub fn decode_partial<R: Read>(r: &R) -> Result<i32, VarIntDecodeError> {
+        // TODO
+        // let mut reader = r;
+        // let mut val = 0;
+        // for i in 0..Self::MAX_SIZE {
+        //     let byte = reader.read_u8()?;
+        //     val |= (i32::from(byte) & 0b01111111) << (i * 7);
+        //     if byte & 0b10000000 == 0 {
+        //         return Ok(val);
+        //     }
+        // }
+        // Err(VarIntDecodeError::TooLarge)
+        todo!()
     }
+
 }
 
 impl Encode for VarInt {
@@ -118,15 +122,17 @@ impl Encode for VarInt {
 
 impl Decode<'_> for VarInt {
     fn decode(r: &mut &[u8]) -> anyhow::Result<Self> {
-        let mut val = 0;
-        for i in 0..Self::MAX_SIZE {
-            let byte = r.read_u8()?;
-            val |= (i32::from(byte) & 0b01111111) << (i * 7);
-            if byte & 0b10000000 == 0 {
-                return Ok(VarInt(val));
-            }
-        }
-        bail!("VarInt is too large")
+        // TODO
+        // let mut val = 0;
+        // for i in 0..Self::MAX_SIZE {
+        //     let byte = r.read_u8()?;
+        //     val |= (i32::from(byte) & 0b01111111) << (i * 7);
+        //     if byte & 0b10000000 == 0 {
+        //         return Ok(VarInt(val));
+        //     }
+        // }
+        // bail!("VarInt is too large")
+        todo!()
     }
 }
 
