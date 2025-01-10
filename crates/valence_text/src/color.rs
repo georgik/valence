@@ -1,11 +1,13 @@
 //! [`Color`] and related data structures.
 
-use std::fmt;
-use std::hash::Hash;
+use core::hash::Hash;
 
 use serde::de::Visitor;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use thiserror::Error;
+use alloc::format;
+use core::hash;
+use core::fmt;
 
 /// Text color
 #[derive(Default, Debug, PartialOrd, Eq, Ord, Clone, Copy)]
@@ -180,7 +182,7 @@ impl PartialEq for Color {
 }
 
 impl Hash for Color {
-    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+    fn hash<H: hash::Hasher>(&self, state: &mut H) {
         match self {
             Self::Reset => state.write_u8(0),
             Self::Rgb(rgb) => {

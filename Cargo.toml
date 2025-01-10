@@ -183,7 +183,7 @@ toml = "0.8.19"
 tracing = {  version = "0.1.40", default-features = false }
 tracing-subscriber = "0.3.18"
 url = { version = "2.5.2", features = ["serde"] }
-uuid = "1.10.0"
+uuid = {  version = "1.10.0", default-features = false }
 valence = { path = ".", version = "0.2.0-alpha.1" }
 valence_advancement = { path = "crates/valence_advancement", version = "0.2.0-alpha.1" }
 valence_anvil = { path = "crates/valence_anvil", version = "0.1.0" }
