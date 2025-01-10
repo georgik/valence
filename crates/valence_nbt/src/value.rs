@@ -66,22 +66,28 @@ pub enum ValueMut<'a, S = String> {
 
 macro_rules! impl_value {
     ($name:ident, $($lifetime:lifetime)?, ($($deref:tt)*), $($reference:tt)*) => {
-        macro_rules! as_number {
-            ($method_name:ident, $ty:ty, $($deref)*) => {
-                #[doc = concat!("If this value is a number, returns the `", stringify!($ty), "` representation of this value.")]
-                pub fn $method_name(&self) -> Option<$ty> {
-                    #[allow(trivial_numeric_casts)]
-                    match self {
-                        Self::Byte(v) => Some($($deref)* v as $ty),
-                        Self::Short(v) => Some($($deref)* v as $ty),
-                        Self::Int(v) => Some($($deref)* v as $ty),
-                        Self::Long(v) => Some($($deref)* v as $ty),
-                        Self::Float(v) => Some(libm::floorf($($deref)* v) as $ty),
-                        Self::Double(v) => Some(libm::floor($($deref)* v) as $ty),                    }
-
-                }
+macro_rules! as_number {
+    ($method_name:ident, $ty:ty, $($deref)*) => {
+        #[doc = concat!("If this value is a number, returns the `", stringify!($ty), "` representation of this value.")]
+        pub fn $method_name(&self) -> Option<$ty> {
+            #[allow(trivial_numeric_casts)]
+            match self {
+                Self::Byte(v) => Some($($deref)* v as $ty),
+                Self::Short(v) => Some($($deref)* v as $ty),
+                Self::Int(v) => Some($($deref)* v as $ty),
+                Self::Long(v) => Some($($deref)* v as $ty),
+                Self::Float(v) => Some(libm::floorf($($deref)* v) as $ty),
+                Self::Double(v) => Some(libm::floor($($deref)* v) as $ty),
+                Self::ByteArray(_) => None, // ByteArray cannot be represented as a number
+                Self::String(_) => None,    // String cannot be represented as a number
+                Self::List(_) => None,      // List cannot be represented as a number
+                Self::Compound(_) => None,  // Compound cannot be represented as a number
+                Self::IntArray(_) => None,  // IntArray cannot be represented as a number
+                Self::LongArray(_) => None, // LongArray cannot be represented as a number
             }
         }
+    }
+}
 
         macro_rules! as_number_float {
             ($method_name:ident, $ty:ty, $($deref)*) => {
