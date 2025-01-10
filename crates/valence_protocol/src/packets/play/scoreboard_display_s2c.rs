@@ -2,6 +2,7 @@
 
 use super::team_s2c::TeamColor;
 use crate::{Decode, Encode, Packet};
+use core::fmt::Write;
 
 #[derive(Copy, Clone, Debug, Encode, Decode, Packet)]
 pub struct ScoreboardDisplayS2c<'a> {
@@ -25,7 +26,7 @@ pub enum ScoreboardPosition {
 }
 
 impl Encode for ScoreboardPosition {
-    fn encode(&self, w: impl io::Write) -> anyhow::Result<()> {
+    fn encode(&self, w: impl Write) -> anyhow::Result<()> {
         match self {
             ScoreboardPosition::List => 0_u8.encode(w),
             ScoreboardPosition::Sidebar => 1_u8.encode(w),
