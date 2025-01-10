@@ -1,10 +1,14 @@
 #![allow(clippy::cast_lossless)] // TODO: Remove me.
 
-use std::borrow::Cow;
-use std::hash::Hash;
+use alloc::borrow::Cow;
+use core::hash::Hash;
 
 use crate::tag::Tag;
 use crate::{Compound, List};
+use esp_alloc as _;
+use alloc::vec;
+use alloc::vec::Vec;
+use alloc::string::String;
 
 /// Represents an arbitrary NBT value.
 #[derive(Clone, Debug)]
@@ -71,9 +75,8 @@ macro_rules! impl_value {
                         Self::Short(v) => Some($($deref)* v as $ty),
                         Self::Int(v) => Some($($deref)* v as $ty),
                         Self::Long(v) => Some($($deref)* v as $ty),
-                        Self::Float(v) => Some(v.floor() as $ty),
-                        Self::Double(v) => Some(v.floor() as $ty),
-                        _ => None,
+                        Self::Float(v) => Some(libm::floorf(*v) as $ty),
+                        Self::Double(v) => Some(libm::floor(*v) as $ty),                        _ => None,
                     }
                 }
             }
