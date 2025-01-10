@@ -168,9 +168,9 @@ rfd = "0.14.1"
 rsa = "0.9.6"
 rsa-der = "0.3.0"
 rustc-hash = "2.0.0"
-serde = "1.0.210"
+serde = { version = "1.0.217", default-features = false, features = ["derive", "alloc"] }
 serde-value = "0.7.0"
-serde_json = "1.0.128"
+serde_json = { version = "1.0.135", default-features = false, features = ["alloc"] }
 sha1 = "0.10.6"
 sha2 = "0.10.8"
 syn = "2.0.77"

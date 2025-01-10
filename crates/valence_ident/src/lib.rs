@@ -1,10 +1,18 @@
 #![doc = include_str!("../README.md")]
+#![no_std]
 
-use std::borrow::{Borrow, Cow};
-use std::cmp::Ordering;
-use std::fmt;
-use std::fmt::Formatter;
-use std::str::FromStr;
+extern crate alloc;
+use esp_alloc as _;
+use alloc::string::String;
+use crate::alloc::borrow::ToOwned;
+use alloc::borrow::Cow;
+use core::hash::Hash;
+use alloc::format;
+use alloc::borrow::Borrow;
+use alloc::str::FromStr;
+use core::fmt;
+use core::fmt::Formatter;
+use core::cmp::Ordering;
 
 use serde::de::Error as _;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
