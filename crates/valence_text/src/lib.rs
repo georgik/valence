@@ -1,9 +1,22 @@
 #![doc = include_str!("../README.md")]
-
-use std::borrow::Cow;
-use std::ops::{Deref, DerefMut};
-use std::str::FromStr;
-use std::{fmt, ops};
+#![no_std]
+extern crate alloc;
+use alloc::borrow::Cow;
+use alloc::format;
+use esp_alloc as _;
+// use std::ops::{Deref, DerefMut};
+// use std::str::FromStr;
+// use std::{fmt, ops};
+use alloc::boxed::Box;
+use alloc::vec::Vec;
+use alloc::string::String;
+use core::ops::Deref;
+use core::ops::DerefMut;
+use core::ops;
+use alloc::str::FromStr;
+use alloc::fmt;
+use crate::alloc::string::ToString;
+use crate::alloc::borrow::ToOwned;
 
 use serde::de::Visitor;
 use serde::{de, Deserialize, Deserializer, Serialize};
