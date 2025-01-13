@@ -33,17 +33,20 @@ impl From<VarIntDecodeError> for anyhow::Error {
 
 impl Encode for bool {
     fn encode(&self, mut w: impl Write) -> anyhow::Result<()> {
-        w.write_u8(u8::from(*self))?;
+        w.write_u8(u8::from(*self)).map_err(anyhow::Error::from)?;
         Ok(())
     }
 
     fn encode_slice(slice: &[bool], mut w: impl Write) -> anyhow::Result<()> {
         // SAFETY: Bools have the same layout as u8.
         let bytes = unsafe { slice::from_raw_parts(slice.as_ptr() as *const u8, slice.len()) };
-        w.write_all(bytes)?;
+        w.write_all(bytes).map_err(anyhow::Error::from)?;
         Ok(())
     }
 }
+
+
+
 
 impl Decode<'_> for bool {
     fn decode(r: &mut &[u8]) -> anyhow::Result<Self> {
