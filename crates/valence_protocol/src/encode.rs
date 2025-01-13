@@ -28,6 +28,47 @@ pub struct PacketEncoder {
     cipher: Option<Cipher>,
 }
 
+use core::fmt;
+
+/// A `BufMut` adapter which implements `core::fmt::Write` for the inner value.
+#[derive(Debug)]
+pub struct Writer<'a, B> {
+    buf: &'a mut B,
+}
+
+impl<'a, B> Writer<'a, B> {
+    /// Creates a new `Writer` for the given buffer.
+    pub fn new(buf: &'a mut B) -> Self {
+        Writer { buf }
+    }
+
+    /// Gets a reference to the underlying buffer.
+    pub fn get_ref(&self) -> &B {
+        &self.buf
+    }
+
+    /// Gets a mutable reference to the underlying buffer.
+    pub fn get_mut(&mut self) -> &mut B {
+        &mut self.buf
+    }
+
+    /// Consumes the `Writer`, returning the underlying buffer.
+    pub fn into_inner(self) -> &'a mut B {
+        self.buf
+    }
+}
+
+impl<'a, B: BufMut> fmt::Write for Writer<'a, B> {
+    fn write_str(&mut self, s: &str) -> fmt::Result {
+        if self.buf.remaining_mut() < s.len() {
+            return Err(fmt::Error);
+        }
+        self.buf.put_slice(s.as_bytes());
+        Ok(())
+    }
+}
+
+
 impl PacketEncoder {
     pub fn new() -> Self {
         Self::default()
@@ -66,7 +107,8 @@ impl PacketEncoder {
     {
         let start_len = self.buf.len();
 
-        pkt.encode_with_id((&mut self.buf).writer())?;
+        pkt.encode_with_id(Writer::new(&mut self.buf))?;
+
 
         let data_len = self.buf.len() - start_len;
 

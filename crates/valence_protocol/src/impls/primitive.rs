@@ -5,6 +5,31 @@ use core::slice;
 
 use crate::{Decode, Encode};
 use crate::var_int::Read;
+use core::fmt;
+
+#[derive(Debug)]
+pub struct VarIntDecodeError {
+    details: &'static str,
+}
+
+impl VarIntDecodeError {
+    pub fn new(details: &'static str) -> Self {
+        Self { details }
+    }
+}
+
+impl fmt::Display for VarIntDecodeError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "VarIntDecodeError: {}", self.details)
+    }
+}
+
+// Ensure that `VarIntDecodeError` can be converted to `anyhow::Error`
+impl From<VarIntDecodeError> for anyhow::Error {
+    fn from(err: VarIntDecodeError) -> Self {
+        anyhow::anyhow!("{}", err)
+    }
+}
 
 impl Encode for bool {
     fn encode(&self, mut w: impl Write) -> anyhow::Result<()> {
@@ -22,11 +47,15 @@ impl Encode for bool {
 
 impl Decode<'_> for bool {
     fn decode(r: &mut &[u8]) -> anyhow::Result<Self> {
-        let n = r.read_u8()?;
+        let n = r
+            .read_u8()
+            .map_err(|_| anyhow::Error::from(VarIntDecodeError::new("failed to decode VarInt")))?;
         ensure!(n <= 1, "decoded boolean byte is not 0 or 1 (got {n})");
         Ok(n == 1)
     }
 }
+
+
 
 impl Encode for u8 {
     fn encode(&self, mut w: impl Write) -> anyhow::Result<()> {
@@ -42,7 +71,7 @@ impl Encode for u8 {
 
 impl Decode<'_> for u8 {
     fn decode(r: &mut &[u8]) -> anyhow::Result<Self> {
-        r.read_u8().map_err(Into::into)
+        r.read_u8().map_err(|_| VarIntDecodeError::new("Failed to decode u8").into())
     }
 }
 
@@ -67,7 +96,7 @@ impl Decode<'_> for i8 {
 
 impl Encode for u16 {
     fn encode(&self, mut w: impl Write) -> anyhow::Result<()> {
-        w.write_u16::<BigEndian>(*self)?;
+        w.write_u16(*self)?;
         Ok(())
     }
 }
@@ -80,7 +109,7 @@ impl Decode<'_> for u16 {
 
 impl Encode for i16 {
     fn encode(&self, mut w: impl Write) -> anyhow::Result<()> {
-        w.write_i16::<BigEndian>(*self)?;
+        w.write_i16(*self)?;
         Ok(())
     }
 }
@@ -93,7 +122,7 @@ impl Decode<'_> for i16 {
 
 impl Encode for u32 {
     fn encode(&self, mut w: impl Write) -> anyhow::Result<()> {
-        w.write_u32::<BigEndian>(*self)?;
+        w.write_u32(*self)?;
         Ok(())
     }
 }
@@ -106,7 +135,7 @@ impl Decode<'_> for u32 {
 
 impl Encode for i32 {
     fn encode(&self, mut w: impl Write) -> anyhow::Result<()> {
-        w.write_i32::<BigEndian>(*self)?;
+        w.write_i32(*self)?;
         Ok(())
     }
 }
@@ -119,7 +148,7 @@ impl Decode<'_> for i32 {
 
 impl Encode for u64 {
     fn encode(&self, mut w: impl Write) -> anyhow::Result<()> {
-        w.write_u64::<BigEndian>(*self)?;
+        w.write_u64(*self)?;
         Ok(())
     }
 }
@@ -132,7 +161,7 @@ impl Decode<'_> for u64 {
 
 impl Encode for i64 {
     fn encode(&self, mut w: impl Write) -> anyhow::Result<()> {
-        w.write_i64::<BigEndian>(*self)?;
+        w.write_i64(*self)?;
         Ok(())
     }
 }
@@ -145,9 +174,7 @@ impl Decode<'_> for i64 {
 
 impl Encode for u128 {
     fn encode(&self, mut w: impl Write) -> anyhow::Result<()> {
-        let mut buf = [0u8; 16];
-        BigEndian::write_u128(&mut buf, *self);
-        w.write_all(&buf)?;
+        w.write_u128(*self)?;
         Ok(())
     }
 }
@@ -167,7 +194,7 @@ impl Encode for f32 {
             "attempt to encode non-finite f32 ({})",
             self
         );
-        w.write_f32::<BigEndian>(*self)?;
+        w.write_f32(*self)?;
         Ok(())
     }
 }
@@ -187,7 +214,7 @@ impl Encode for f64 {
             "attempt to encode non-finite f64 ({})",
             self
         );
-        w.write_f64::<BigEndian>(*self)?;
+        w.write_f64(*self)?;
         Ok(())
     }
 }
