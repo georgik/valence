@@ -66,8 +66,7 @@ impl PacketEncoder {
     {
         let start_len = self.buf.len();
 
-        // TODO
-        // pkt.encode_with_id((&mut self.buf).writer())?;
+        pkt.encode_with_id((&mut self.buf).writer())?;
 
         let data_len = self.buf.len() - start_len;
 

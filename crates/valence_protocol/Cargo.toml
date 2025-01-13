@@ -37,7 +37,8 @@ base64.workspace = true
 url = { version = "2.5.4", default-features = false }
 serde_json = { version = "1.0.135", default-features = false, features = ["alloc"]}
 tracing.workspace = true
-bytes = { version = "1.9.0", default-features = false}
+#bytes = { version = "1.9.0", default-features = false}
+bytes = { path = "../../../bytes",  version = "1.9.0", default-features = false}
 bitfield-struct.workspace = true
 derive_more = { version = "1.0.0", default-features = false, features = ["from", "into", "deref", "deref_mut", "as_ref"]  }
 #derive_more = { workspace = true, default-features = false, features = ["from", "into", "deref", "deref_mut", "as_ref"] }
