@@ -32,6 +32,17 @@ impl std::error::Error for VarIntDecodeError {}
 /// Define a minimal `Read` trait for no_std compatibility.
 pub trait Read {
     fn read_u8(&mut self) -> Result<u8, VarIntDecodeError>;
+    fn read_i8(&mut self) -> Result<i8, VarIntDecodeError>;
+    fn read_u16(&mut self) -> Result<u16, VarIntDecodeError>;
+    fn read_i16(&mut self) -> Result<i16, VarIntDecodeError>;
+    fn read_u32(&mut self) -> Result<u32, VarIntDecodeError>;
+    fn read_i32(&mut self) -> Result<i32, VarIntDecodeError>;
+    fn read_u64(&mut self) -> Result<u64, VarIntDecodeError>;
+    fn read_i64(&mut self) -> Result<i64, VarIntDecodeError>;
+    fn read_u128(&mut self) -> Result<u128, VarIntDecodeError>;
+    fn read_i128(&mut self) -> Result<i128, VarIntDecodeError>;
+    fn read_f32(&mut self) -> Result<f32, VarIntDecodeError>;
+    fn read_f64(&mut self) -> Result<f64, VarIntDecodeError>;
 }
 
 /// Implement `Read` for `&[u8]` slices.
@@ -44,6 +55,81 @@ impl<'a> Read for &'a [u8] {
             *self = &self[1..];
             Ok(byte)
         }
+    }
+
+    fn read_i8(&mut self) -> Result<i8, VarIntDecodeError> {
+        self.read_u8().map(|byte| byte as i8)
+    }
+
+    fn read_u16(&mut self) -> Result<u16, VarIntDecodeError> {
+        if self.len() < 2 {
+            Err(VarIntDecodeError::new("Incomplete"))
+        } else {
+            // Read the first two bytes
+            let result = u16::from_be_bytes([self[0], self[1]]);
+            *self = &self[2..]; // Advance the slice
+            Ok(result)
+        }
+    }
+
+    fn read_i16(&mut self) -> Result<i16, VarIntDecodeError> {
+        self.read_u16().map(|val| val as i16)
+    }
+
+    fn read_u32(&mut self) -> Result<u32, VarIntDecodeError> {
+        if self.len() < 4 {
+            Err(VarIntDecodeError::new("Incomplete"))
+        } else {
+            let result = u32::from_be_bytes([self[0], self[1], self[2], self[3]]);
+            *self = &self[4..];
+            Ok(result)
+        }
+    }
+
+    fn read_i32(&mut self) -> Result<i32, VarIntDecodeError> {
+        self.read_u32().map(|val| val as i32)
+    }
+
+    fn read_u64(&mut self) -> Result<u64, VarIntDecodeError> {
+        if self.len() < 8 {
+            Err(VarIntDecodeError::new("Incomplete"))
+        } else {
+            let result = u64::from_be_bytes([
+                self[0], self[1], self[2], self[3], self[4], self[5], self[6], self[7],
+            ]);
+            *self = &self[8..];
+            Ok(result)
+        }
+    }
+
+    fn read_i64(&mut self) -> Result<i64, VarIntDecodeError> {
+        self.read_u64().map(|val| val as i64)
+    }
+
+    fn read_u128(&mut self) -> Result<u128, VarIntDecodeError> {
+        if self.len() < 16 {
+            Err(VarIntDecodeError::new("Incomplete"))
+        } else {
+            let result = u128::from_be_bytes([
+                self[0], self[1], self[2], self[3], self[4], self[5], self[6], self[7],
+                self[8], self[9], self[10], self[11], self[12], self[13], self[14], self[15],
+            ]);
+            *self = &self[16..];
+            Ok(result)
+        }
+    }
+
+    fn read_i128(&mut self) -> Result<i128, VarIntDecodeError> {
+        self.read_u128().map(|val| val as i128)
+    }
+
+
+    fn read_f32(&mut self) -> Result<f32, VarIntDecodeError> {
+        self.read_u32().map(|val| f32::from_bits(val))
+    }
+
+    fn read_f64(&mut self) -> Result<f64, VarIntDecodeError> {
+        self.read_u64().map(|val| f64::from_bits(val))
     }
 }
 

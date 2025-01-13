@@ -29,8 +29,8 @@ impl<const MAX_CHARS: usize> Encode for Bounded<&'_ str, MAX_CHARS> {
             "char count of string exceeds maximum (expected <= {MAX_CHARS}, got {char_count})"
         );
 
-        VarInt(self.len() as i32).encode(&mut w)?;
-        Ok(w.write_all(self.as_bytes())?)
+        VarInt(self.len() as i32).encode(&mut w).map_err(|e| e.context("encoding string length"))?;
+        Ok(())
     }
 }
 
