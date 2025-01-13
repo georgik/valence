@@ -2,6 +2,7 @@ use anyhow::ensure;
 use byteorder::BigEndian;
 use crate::Write;
 use core::slice;
+use alloc::format;
 
 use crate::{Decode, Encode};
 use crate::var_int::Read;
@@ -33,14 +34,14 @@ impl From<VarIntDecodeError> for anyhow::Error {
 
 impl Encode for bool {
     fn encode(&self, mut w: impl Write) -> anyhow::Result<()> {
-        w.write_u8(u8::from(*self)).map_err(anyhow::Error::from)?;
+        w.write_u8(u8::from(*self)).map_err(|e| anyhow::Error::msg(format!("{:?}", e)))?;
         Ok(())
     }
 
     fn encode_slice(slice: &[bool], mut w: impl Write) -> anyhow::Result<()> {
         // SAFETY: Bools have the same layout as u8.
         let bytes = unsafe { slice::from_raw_parts(slice.as_ptr() as *const u8, slice.len()) };
-        w.write_all(bytes).map_err(anyhow::Error::from)?;
+        w.write_all(bytes).map_err(|e| anyhow::Error::msg(format!("{:?}", e)))?;
         Ok(())
     }
 }
@@ -59,15 +60,14 @@ impl Decode<'_> for bool {
 }
 
 
-
 impl Encode for u8 {
     fn encode(&self, mut w: impl Write) -> anyhow::Result<()> {
-        w.write_u8(*self)?;
+        w.write_u8(*self).map_err(|e| anyhow::Error::msg(format!("{:?}", e)))?;
         Ok(())
     }
 
     fn encode_slice(slice: &[u8], mut w: impl Write) -> anyhow::Result<()> {
-        w.write_all(slice)?;
+        w.write_all(slice).map_err(|e| anyhow::Error::msg(format!("{:?}", e)))?;
         Ok(())
     }
 }
@@ -80,13 +80,14 @@ impl Decode<'_> for u8 {
 
 impl Encode for i8 {
     fn encode(&self, mut w: impl Write) -> anyhow::Result<()> {
-        w.write_i8(*self)?;
+        w.write_i8(*self).map_err(|e| anyhow::Error::msg(format!("{:?}", e)))?;
         Ok(())
     }
 
     fn encode_slice(slice: &[i8], mut w: impl Write) -> anyhow::Result<()> {
+        // SAFETY: The layout of `i8` is the same as `u8`, so we can safely cast.
         let bytes = unsafe { slice::from_raw_parts(slice.as_ptr() as *const u8, slice.len()) };
-        w.write_all(bytes)?;
+        w.write_all(bytes).map_err(|e| anyhow::Error::msg(format!("{:?}", e)))?;
         Ok(())
     }
 }
