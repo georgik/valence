@@ -2,7 +2,7 @@
 
 use super::team_s2c::TeamColor;
 use crate::{Decode, Encode, Packet};
-use crate::writer::Write;
+use crate::Write;
 
 #[derive(Copy, Clone, Debug, Encode, Decode, Packet)]
 pub struct ScoreboardDisplayS2c<'a> {

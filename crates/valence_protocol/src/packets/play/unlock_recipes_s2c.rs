@@ -5,7 +5,7 @@ use anyhow::bail;
 use valence_ident::Ident;
 
 use crate::{Decode, Encode, Packet, VarInt};
-use crate::writer::Write;
+use crate::Write;
 use alloc::vec::Vec;
 
 #[derive(Clone, PartialEq, Eq, Debug, Packet)]

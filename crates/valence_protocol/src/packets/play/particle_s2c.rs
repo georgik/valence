@@ -6,7 +6,7 @@ use valence_generated::block::BlockState;
 use valence_math::{DVec3, Vec3};
 
 use crate::{BlockPos, Decode, Encode, ItemStack, Packet, VarInt};
-use crate::writer::Write;
+use crate::Write;
 
 #[derive(Clone, Debug, Packet)]
 pub struct ParticleS2c<'a> {

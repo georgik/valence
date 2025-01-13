@@ -6,7 +6,7 @@ use valence_ident::Ident;
 
 use crate::var_int::VarInt;
 use crate::{Decode, Encode};
-use crate::writer::Write;
+use crate::Write;
 
 #[derive(Clone, PartialEq, Debug)]
 pub enum SoundId<'a> {

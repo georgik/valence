@@ -3,7 +3,7 @@
 use core::mem;
 use anyhow::ensure;
 use derive_more::{Deref, DerefMut, From, Into};
-use crate::writer::Write;
+use crate::Write;
 
 use crate::{Bounded, Decode, Encode};
 

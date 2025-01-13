@@ -5,7 +5,7 @@ use uuid::Uuid;
 use valence_text::Text;
 
 use crate::{Bounded, Decode, Encode, Packet, VarInt};
-use crate::writer::Write;
+use crate::Write;
 use alloc::vec::Vec;
 #[derive(Clone, PartialEq, Debug, Packet)]
 pub struct ChatMessageS2c<'a> {

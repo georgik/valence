@@ -1,7 +1,7 @@
 
 use anyhow::ensure;
 use byteorder::BigEndian;
-use crate::writer::Write;
+use crate::Write;
 use core::slice;
 
 use crate::{Decode, Encode};

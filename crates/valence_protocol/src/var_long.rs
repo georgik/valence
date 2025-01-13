@@ -3,7 +3,7 @@
 use anyhow::bail;
 use derive_more::{From, Into};
 use serde::{Deserialize, Serialize};
-use crate::writer::Write;
+use crate::Write;
 use crate::var_int::Read;
 
 use crate::{Decode, Encode};

@@ -51,7 +51,7 @@ pub(super) fn derive_encode(item: TokenStream) -> Result<TokenStream> {
                 impl #impl_generics ::valence_protocol::__private::Encode for #input_name #ty_generics
                 #where_clause
                 {
-                    fn encode(&self, mut _w: impl ::valence_protocol::writer::Write) -> ::valence_protocol::__private::Result<()> {
+                    fn encode(&self, mut _w: impl ::valence_protocol::Write) -> ::valence_protocol::__private::Result<()> {
                         use ::valence_protocol::__private::{Encode, Context};
 
                         #encode_fields
@@ -149,7 +149,7 @@ pub(super) fn derive_encode(item: TokenStream) -> Result<TokenStream> {
                 impl #impl_generics ::valence_protocol::__private::Encode for #input_name #ty_generics
                 #where_clause
                 {
-                    fn encode(&self, mut _w: impl ::valence_protocol::writer::Write) -> ::valence_protocol::__private::Result<()> {
+                    fn encode(&self, mut _w: impl ::valence_protocol::Write) -> ::valence_protocol::__private::Result<()> {
                         use ::valence_protocol::__private::{Encode, VarInt, Context};
 
                         match self {

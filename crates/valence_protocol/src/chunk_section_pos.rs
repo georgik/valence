@@ -1,7 +1,7 @@
 use core::fmt;
 use bitfield_struct::bitfield;
 use derive_more::From;
-use crate::writer::Write;
+use crate::Write;
 
 #[derive(Copy, Clone, PartialEq, Eq, Debug, From)]
 pub struct Error(pub ChunkSectionPos);

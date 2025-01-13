@@ -1,5 +1,5 @@
 use core::fmt;
-use crate::writer::Write;
+use crate::Write;
 use crate::Encode;
 use crate::Decode;
 

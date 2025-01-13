@@ -7,7 +7,7 @@ use aes::cipher::{BlockEncryptMut, BlockSizeUser, KeyIvInit};
 use anyhow::ensure;
 use bytes::{BufMut, BytesMut};
 use tracing::warn;
-use crate::writer::Write;
+use crate::Write;
 
 use crate::var_int::VarInt;
 use crate::{CompressionThreshold, Encode, Packet, MAX_PACKET_SIZE};

@@ -5,7 +5,7 @@ use bitfield_struct::bitfield;
 
 use crate::chunk_section_pos::ChunkSectionPos;
 use crate::{Decode, Encode, Packet, VarLong};
-use crate::writer::Write;
+use crate::Write;
 #[derive(Clone, Debug, Encode, Decode, Packet)]
 pub struct ChunkDeltaUpdateS2c<'a> {
     pub chunk_sect_pos: ChunkSectionPos,

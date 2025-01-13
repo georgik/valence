@@ -4,7 +4,7 @@ pub use valence_generated::item::ItemKind;
 use valence_nbt::Compound;
 
 use crate::{Decode, Encode};
-use crate::writer::Write;
+use crate::Write;
 
 /// A stack of items in an inventory.
 #[derive(Clone, PartialEq, Debug, Default)]

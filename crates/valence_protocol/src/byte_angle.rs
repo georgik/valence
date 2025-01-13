@@ -1,6 +1,6 @@
 use core::fmt;
 use core::f32::consts::TAU;
-use crate::writer::Write;
+use crate::Write;
 use crate::{Decode, Encode};
 use libm::{fmodf, roundf};
 

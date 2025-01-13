@@ -1,5 +1,5 @@
 
-use crate::writer::Write;
+use crate::Write;
 use anyhow::Context;
 use uuid::Uuid;
 use valence_generated::block::{BlockEntityKind, BlockKind, BlockState};

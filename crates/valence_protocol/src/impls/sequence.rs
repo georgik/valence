@@ -6,7 +6,7 @@ use core::mem;
 use alloc::vec::Vec;
 use alloc::boxed::Box;
 use anyhow::ensure;
-use crate::writer::Write;
+use crate::Write;
 use core::any;
 use core::slice;
 

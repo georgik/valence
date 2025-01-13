@@ -1,7 +1,7 @@
 
 
 use valence_math::*;
-use crate::writer::Write;
+use crate::Write;
 
 use crate::{Decode, Encode};
 

@@ -39,8 +39,10 @@ pub mod sound;
 pub mod var_int;
 mod var_long;
 mod velocity;
+// pub mod writer;
+// use writer::Write;
 pub mod writer;
-use writer::Write;
+use crate::writer::WriteExt as Write;
 
 
 use anyhow::Context;

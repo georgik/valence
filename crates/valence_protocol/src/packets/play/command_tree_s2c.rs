@@ -3,7 +3,7 @@ use alloc::vec::Vec;
 use alloc::string::String;
 use anyhow::bail;
 use valence_ident::Ident;
-use crate::writer::Write;
+use crate::Write;
 
 use crate::{Decode, Encode, Packet, VarInt};
 

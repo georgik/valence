@@ -1,7 +1,7 @@
 
 // use std::str::FromStr;
-// use crate::writer::Write;
-use crate::writer::Write;
+// use crate::Write;
+use crate::Write;
 use alloc::string::String;
 use alloc::boxed::Box;
 use core::str::FromStr;

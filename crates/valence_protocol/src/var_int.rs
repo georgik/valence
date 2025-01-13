@@ -1,6 +1,6 @@
 // Replace `std` usage with `core` or custom implementations for `no_std`.
 use core::fmt;
-use crate::writer::Write;
+use crate::Write;
 
 // Use alloc for heap-allocated collections in no_std contexts.
 extern crate alloc;
