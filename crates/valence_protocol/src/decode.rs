@@ -32,7 +32,7 @@ impl PacketDecoder {
     pub fn try_next_packet(&mut self) -> anyhow::Result<Option<PacketFrame>> {
         let mut r = &self.buf[..];
 
-        let packet_len = match VarInt::decode_partial(&mut r) {
+        let packet_len = match VarInt::decode_partial(r) {
             Ok(len) => len,
             Err(VarIntDecodeError::Incomplete) => return Ok(None),
             Err(VarIntDecodeError::TooLarge) => bail!("malformed packet length VarInt"),

@@ -1,6 +1,7 @@
 // Replace `std` usage with `core` or custom implementations for `no_std`.
 use core::fmt;
 use crate::Write;
+use alloc::format;
 
 // Use alloc for heap-allocated collections in no_std contexts.
 extern crate alloc;
@@ -63,7 +64,7 @@ impl<'a> Read for &'a [u8] {
 
     fn read_u16(&mut self) -> Result<u16, VarIntDecodeError> {
         if self.len() < 2 {
-            Err(VarIntDecodeError::new("Incomplete"))
+            Err(VarIntDecodeError::Incomplete)
         } else {
             // Read the first two bytes
             let result = u16::from_be_bytes([self[0], self[1]]);
@@ -78,7 +79,7 @@ impl<'a> Read for &'a [u8] {
 
     fn read_u32(&mut self) -> Result<u32, VarIntDecodeError> {
         if self.len() < 4 {
-            Err(VarIntDecodeError::new("Incomplete"))
+            Err(VarIntDecodeError::Incomplete)
         } else {
             let result = u32::from_be_bytes([self[0], self[1], self[2], self[3]]);
             *self = &self[4..];
@@ -92,7 +93,7 @@ impl<'a> Read for &'a [u8] {
 
     fn read_u64(&mut self) -> Result<u64, VarIntDecodeError> {
         if self.len() < 8 {
-            Err(VarIntDecodeError::new("Incomplete"))
+            Err(VarIntDecodeError::Incomplete)
         } else {
             let result = u64::from_be_bytes([
                 self[0], self[1], self[2], self[3], self[4], self[5], self[6], self[7],
@@ -108,7 +109,7 @@ impl<'a> Read for &'a [u8] {
 
     fn read_u128(&mut self) -> Result<u128, VarIntDecodeError> {
         if self.len() < 16 {
-            Err(VarIntDecodeError::new("Incomplete"))
+            Err(VarIntDecodeError::Incomplete)
         } else {
             let result = u128::from_be_bytes([
                 self[0], self[1], self[2], self[3], self[4], self[5], self[6], self[7],
@@ -170,20 +171,18 @@ impl VarInt {
     }
 
     /// Decodes a `VarInt` with partial input support.
-    pub fn decode_partial<R: Read>(r: &R) -> Result<i32, VarIntDecodeError> {
-        // TODO
-        // let mut reader = r;
-        // let mut val = 0;
-        // for i in 0..Self::MAX_SIZE {
-        //     let byte = reader.read_u8()?;
-        //     val |= (i32::from(byte) & 0b01111111) << (i * 7);
-        //     if byte & 0b10000000 == 0 {
-        //         return Ok(val);
-        //     }
-        // }
-        // Err(VarIntDecodeError::TooLarge)
-        todo!()
+    pub fn decode_partial<R: Read>(mut r: R) -> Result<i32, VarIntDecodeError> {
+        let mut val = 0;
+        for i in 0..Self::MAX_SIZE {
+            let byte = r.read_u8().map_err(|e| VarIntDecodeError::Incomplete)?;
+            val |= (i32::from(byte) & 0b01111111) << (i * 7);
+            if byte & 0b10000000 == 0 {
+                return Ok(val);
+            }
+        }
+        Err(VarIntDecodeError::TooLarge)
     }
+
 
 }
 
@@ -201,24 +200,22 @@ impl Encode for VarInt {
             index += 1;
         }
 
-        w.write_all(&buffer[..index])?;
+        w.write_all(&buffer[..index]).map_err(|e| anyhow::Error::msg(format!("{:?}", e)))?;
         Ok(())
     }
 }
 
 impl Decode<'_> for VarInt {
     fn decode(r: &mut &[u8]) -> anyhow::Result<Self> {
-        // TODO
-        // let mut val = 0;
-        // for i in 0..Self::MAX_SIZE {
-        //     let byte = r.read_u8()?;
-        //     val |= (i32::from(byte) & 0b01111111) << (i * 7);
-        //     if byte & 0b10000000 == 0 {
-        //         return Ok(VarInt(val));
-        //     }
-        // }
-        // bail!("VarInt is too large")
-        todo!()
+        let mut val = 0;
+        for i in 0..Self::MAX_SIZE {
+            let byte = r.read_u8().map_err(|e| anyhow::Error::msg(format!("{:?}", e)))?;
+            val |= (i32::from(byte) & 0b01111111) << (i * 7);
+            if byte & 0b10000000 == 0 {
+                return Ok(VarInt(val));
+            }
+        }
+        bail!("VarInt is too large")
     }
 }
 

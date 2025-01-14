@@ -5,6 +5,7 @@ use derive_more::{From, Into};
 use serde::{Deserialize, Serialize};
 use crate::Write;
 use crate::var_int::Read;
+use alloc::format;
 
 use crate::{Decode, Encode};
 
@@ -95,10 +96,10 @@ impl Encode for VarLong {
         let mut val = self.0 as u64;
         loop {
             if val & 0b1111111111111111111111111111111111111111111111111111111110000000 == 0 {
-                w.write_all(&[val as u8])?;
+                w.write_all(&[val as u8]).map_err(|e| anyhow::Error::msg(format!("{:?}", e)))?;
                 return Ok(());
             }
-            w.write_all(&[(val as u8 & 0b01111111) | 0b10000000])?;
+            w.write_all(&[(val as u8 & 0b01111111) | 0b10000000]).map_err(|e| anyhow::Error::msg(format!("{:?}", e)))?;
             val >>= 7;
         }
     }

@@ -4,6 +4,7 @@ use alloc::string::String;
 use anyhow::bail;
 use valence_ident::Ident;
 use crate::Write;
+use alloc::format;
 
 use crate::{Decode, Encode, Packet, VarInt};
 
@@ -123,7 +124,7 @@ impl Encode for Node {
             | (u8::from(self.redirect_node.is_some()) * 0x08)
             | (u8::from(has_suggestion) * 0x10);
 
-        w.write_u8(flags)?;
+        w.write_u8(flags).map_err(|e| anyhow::Error::msg(format!("{:?}", e)))?;
 
         self.children.encode(&mut w)?;
 
