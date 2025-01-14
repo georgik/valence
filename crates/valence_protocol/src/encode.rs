@@ -146,8 +146,7 @@ impl PacketEncoder {
             .copy_within(start_len..start_len + data_len, start_len + packet_len_size);
 
         let front = &mut self.buf[start_len..];
-        // TODO
-        // VarInt(packet_len as i32).encode(&front)?;
+        VarInt(packet_len as i32).encode(front).map_err(|e| anyhow::anyhow!("Invalid length: {}", e))?;
 
         Ok(())
     }
