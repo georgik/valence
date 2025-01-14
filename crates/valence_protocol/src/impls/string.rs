@@ -10,6 +10,7 @@ use anyhow::{ensure, Context};
 use valence_text::Text;
 
 use crate::{Bounded, Decode, Encode, VarInt};
+use alloc::format;
 
 const DEFAULT_MAX_STRING_CHARS: usize = 32767;
 const MAX_TEXT_CHARS: usize = 262144;
@@ -29,10 +30,16 @@ impl<const MAX_CHARS: usize> Encode for Bounded<&'_ str, MAX_CHARS> {
             "char count of string exceeds maximum (expected <= {MAX_CHARS}, got {char_count})"
         );
 
+        // Encode the length of the string as a VarInt
         VarInt(self.len() as i32).encode(&mut w).map_err(|e| e.context("encoding string length"))?;
+
+        // Write the string's byte content
+        w.write_all(self.as_bytes())
+            .map_err(|e| anyhow::Error::msg(format!("error writing string content: {:?}", e)))?;
         Ok(())
     }
 }
+
 
 impl<'a> Decode<'a> for &'a str {
     fn decode(r: &mut &'a [u8]) -> anyhow::Result<Self> {
