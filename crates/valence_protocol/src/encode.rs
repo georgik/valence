@@ -1,5 +1,7 @@
+// use std::io::Write;
+// use embedded_io::Write;
+use crate::writer::Writer;
 use alloc::vec::Vec;
-
 #[cfg(feature = "encryption")]
 use aes::cipher::generic_array::GenericArray;
 #[cfg(feature = "encryption")]
@@ -7,7 +9,6 @@ use aes::cipher::{BlockEncryptMut, BlockSizeUser, KeyIvInit};
 use anyhow::ensure;
 use bytes::{BufMut, BytesMut};
 use tracing::warn;
-use crate::writer::Writer;
 
 use crate::var_int::VarInt;
 use crate::{CompressionThreshold, Encode, Packet, MAX_PACKET_SIZE};
@@ -68,51 +69,44 @@ impl PacketEncoder {
     {
         let start_len = self.buf.len();
 
-        // pkt.encode_with_id(Writer::new(&mut self.buf))?;
-        let mut writer = Writer::new(&mut self.buf);
-        pkt.encode_with_id(writer)?;
-
+        pkt.encode_with_id((&mut self.buf).writer())?;
 
         let data_len = self.buf.len() - start_len;
 
         #[cfg(feature = "compression")]
         if self.threshold.0 >= 0 {
-            use std::io::Read;
-
-            use flate2::bufread::ZlibEncoder;
-            use flate2::Compression;
+            use miniz_oxide::deflate::compress_to_vec;
 
             if data_len > self.threshold.0 as usize {
-                let mut z = ZlibEncoder::new(&self.buf[start_len..], Compression::new(4));
+                // Compress the data using `miniz_oxide`
+                let compressed_data = compress_to_vec(&self.buf[start_len..], 6);
 
                 self.compress_buf.clear();
 
                 let data_len_size = VarInt(data_len as i32).written_size();
-
-                let packet_len = data_len_size + z.read_to_end(&mut self.compress_buf)?;
+                let packet_len = data_len_size + compressed_data.len();
 
                 ensure!(
-                    packet_len <= MAX_PACKET_SIZE as usize,
-                    "packet exceeds maximum length"
-                );
-
-                drop(z);
+            packet_len <= MAX_PACKET_SIZE as usize,
+            "packet exceeds maximum length"
+        );
 
                 self.buf.truncate(start_len);
 
                 let mut writer = (&mut self.buf).writer();
 
+                // Write packet length and compressed data length
                 VarInt(packet_len as i32).encode(&mut writer)?;
                 VarInt(data_len as i32).encode(&mut writer)?;
-                self.buf.extend_from_slice(&self.compress_buf);
+                self.buf.extend_from_slice(&compressed_data);
             } else {
                 let data_len_size = 1;
                 let packet_len = data_len_size + data_len;
 
                 ensure!(
-                    packet_len <= MAX_PACKET_SIZE as usize,
-                    "packet exceeds maximum length"
-                );
+            packet_len <= MAX_PACKET_SIZE as usize,
+            "packet exceeds maximum length"
+        );
 
                 let packet_len_size = VarInt(packet_len as i32).written_size();
 
@@ -332,8 +326,7 @@ where
     );
 
     let front = &mut buf[start_len..];
-    // TODO
-    // VarInt(packet_len as i32).encode(front)?;
+    VarInt(packet_len as i32).encode(front)?;
 
     Ok(())
 }
@@ -344,10 +337,7 @@ fn encode_packet_compressed<P>(buf: &mut Vec<u8>, pkt: &P, threshold: u32) -> an
 where
     P: Packet + Encode,
 {
-    use std::io::Read;
-
-    use flate2::bufread::ZlibEncoder;
-    use flate2::Compression;
+    use miniz_oxide::deflate::compress_to_vec;
 
     let start_len = buf.len();
 
@@ -356,24 +346,27 @@ where
     let data_len = buf.len() - start_len;
 
     if data_len > threshold as usize {
-        let mut z = ZlibEncoder::new(&buf[start_len..], Compression::new(4));
+        // Compress the data using `miniz_oxide`.
+        let compressed_data = compress_to_vec(&buf[start_len..], 4);
 
-        let mut scratch = vec![];
-
-        let packet_len = VarInt(data_len as i32).written_size() + z.read_to_end(&mut scratch)?;
+        // Calculate the packet length.
+        let data_len_size = VarInt(data_len as i32).written_size();
+        let packet_len = data_len_size + compressed_data.len();
 
         ensure!(
-            packet_len <= MAX_PACKET_SIZE as usize,
-            "packet exceeds maximum length"
-        );
+        packet_len <= MAX_PACKET_SIZE as usize,
+        "packet exceeds maximum length"
+    );
 
-        drop(z);
-
+        // Clear the buffer for the new compressed data.
         buf.truncate(start_len);
 
+        // Write the packet length and compressed data length.
         VarInt(packet_len as i32).encode(&mut *buf)?;
         VarInt(data_len as i32).encode(&mut *buf)?;
-        buf.extend_from_slice(&scratch);
+
+        // Append the compressed data.
+        buf.extend_from_slice(&compressed_data);
     } else {
         let data_len_size = 1;
         let packet_len = data_len_size + data_len;
@@ -384,14 +377,12 @@ where
         );
 
         let packet_len_size = VarInt(packet_len as i32).written_size();
-
         let data_prefix_len = packet_len_size + data_len_size;
 
         buf.put_bytes(0, data_prefix_len);
         buf.copy_within(start_len..start_len + data_len, start_len + data_prefix_len);
 
         let mut front = &mut buf[start_len..];
-
         VarInt(packet_len as i32).encode(&mut front)?;
         // Zero for no compression on this packet.
         VarInt(0).encode(front)?;
