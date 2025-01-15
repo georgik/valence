@@ -215,10 +215,11 @@ impl Encode for VarInt {
         Ok(())
     }
 }
-
+use esp_println::println;
 
 impl Decode<'_> for VarInt {
     fn decode(r: &mut &[u8]) -> anyhow::Result<Self> {
+        println!("r: {:?}", r);
         let mut val = 0;
         for i in 0..Self::MAX_SIZE {
             let byte = r.read_u8().map_err(|e| anyhow::Error::msg(format!("{:?}", e)))?;

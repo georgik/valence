@@ -1,5 +1,4 @@
 use anyhow::ensure;
-use byteorder::BigEndian;
 use crate::Write;
 use core::slice;
 use alloc::format;
@@ -25,8 +24,6 @@ impl fmt::Display for VarIntDecodeError {
         write!(f, "VarIntDecodeError: {}", self.details)
     }
 }
-
-
 
 // Ensure that `VarIntDecodeError` can be converted to `anyhow::Error`
 impl From<VarIntDecodeError> for anyhow::Error {

@@ -282,11 +282,16 @@ impl WritePacket for PacketWriter<'_> {
     }
 
     fn write_packet_bytes(&mut self, bytes: &[u8]) {
-        // TODO
-        // if let Err(e) = self.buf.write_all(bytes) {
-        //     warn!("failed to write packet bytes: {e:#}");
-        // }
+        // Wrap the buffer in a Writer
+        let mut writer = crate::writer::Writer::new(self.buf);
+
+        // Attempt to write all bytes to the buffer
+        if let Err(e) = writer.write_all(bytes) {
+            warn!("failed to write packet bytes: {e:#}");
+        }
     }
+
+
 }
 
 impl WritePacket for PacketEncoder {
@@ -308,8 +313,10 @@ where
 {
     let start_len = buf.len();
 
-    // TODO
-    // pkt.encode_with_id(&mut *buf)?;
+    // Wrap the buffer in VecWriter
+    let mut writer = crate::writer::Writer::new(buf);
+
+    pkt.encode_with_id(&mut writer)?;
 
     let packet_len = buf.len() - start_len;
 
@@ -339,8 +346,6 @@ fn encode_packet_compressed<P>(buf: &mut Vec<u8>, pkt: &P, threshold: u32) -> an
 where
     P: Packet + Encode,
 {
-    use miniz_oxide::deflate::compress_to_vec;
-
     let start_len = buf.len();
 
     // Wrap the buffer in VecWriter

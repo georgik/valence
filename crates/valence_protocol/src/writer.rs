@@ -126,3 +126,4 @@ impl<'a> Write for Writer<'a, Vec<u8>> {
         Ok(())
     }
 }
+

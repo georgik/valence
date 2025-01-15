@@ -50,6 +50,7 @@ aes = { workspace = true, optional = true }
 hashbrown = { version = "0.15.2", default-features = false }
 esp-alloc = "0.5.0"
 libm = "0.2.11"
+esp-println = "0.12.0"
 
 [dev-dependencies]
 rand = "0.8.4"

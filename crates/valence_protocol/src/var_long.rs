@@ -125,17 +125,15 @@ impl Encode for VarLong {
 
 impl Decode<'_> for VarLong {
     fn decode(r: &mut &[u8]) -> anyhow::Result<Self> {
-        // TODO
-        // let mut val = 0;
-        // for i in 0..Self::MAX_SIZE {
-        //     let byte = r.read_u8()?;
-        //     val |= (i64::from(byte) & 0b01111111) << (i * 7);
-        //     if byte & 0b10000000 == 0 {
-        //         return Ok(VarLong(val));
-        //     }
-        // }
-        // bail!("VarInt is too large")
-        todo!()
+        let mut val = 0;
+        for i in 0..Self::MAX_SIZE {
+            let byte = r.read_u8().map_err(|e| anyhow::Error::msg(format!("{:?}", e)))?;
+            val |= (i64::from(byte) & 0b01111111) << (i * 7);
+            if byte & 0b10000000 == 0 {
+                return Ok(VarLong(val));
+            }
+        }
+        bail!("VarInt is too large")
     }
 }
 
