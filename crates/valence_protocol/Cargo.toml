@@ -13,7 +13,8 @@ workspace = true
 
 [features]
 encryption = ["dep:aes", "dep:cfb8"]
-compression = ["dep:flate2"]
+#compression = ["dep:flate2"]
+compression = ["dep:miniz_oxide"]
 
 [dependencies]
 bevy_ecs.workspace = true                                 # TODO: make this optional
@@ -36,7 +37,8 @@ bytes.workspace = true
 bitfield-struct.workspace = true
 derive_more = { workspace = true, features = ["from", "into", "deref", "deref_mut", "as_ref"] }
 cfb8 = { workspace = true, optional = true }
-flate2 = { workspace = true, optional = true }
+#flate2 = { workspace = true, optional = true }
+miniz_oxide = { workspace = true, optional = true }
 aes = { workspace = true, optional = true }
 
 [dev-dependencies]

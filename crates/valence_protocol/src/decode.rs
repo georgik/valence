@@ -53,12 +53,11 @@ impl PacketDecoder {
         let mut data;
 
         #[cfg(feature = "compression")]
+        use miniz_oxide::inflate::decompress_to_vec;
+        use bytes::BufMut;
+
+        #[cfg(feature = "compression")]
         if self.threshold.0 >= 0 {
-            use std::io::Write;
-
-            use bytes::BufMut;
-            use flate2::write::ZlibDecoder;
-
             r = &r[..packet_len as usize];
 
             let data_len = VarInt::decode(&mut r)?.0;
@@ -69,27 +68,28 @@ impl PacketDecoder {
             );
 
             // Is this packet compressed?
+            // Is this packet compressed?
             if data_len > 0 {
                 ensure!(
-                    data_len > self.threshold.0,
-                    "decompressed packet length of {data_len} is <= the compression threshold of \
-                     {}",
-                    self.threshold.0
-                );
+        data_len > self.threshold.0,
+        "decompressed packet length of {data_len} is <= the compression threshold of {}",
+        self.threshold.0
+    );
 
                 debug_assert!(self.decompress_buf.is_empty());
 
-                self.decompress_buf.put_bytes(0, data_len as usize);
-
-                // TODO: use libdeflater or zune-inflate?
-                let mut z = ZlibDecoder::new(&mut self.decompress_buf[..]);
-
-                z.write_all(r)?;
+                // Perform decompression using `miniz_oxide`.
+                let decompressed = miniz_oxide::inflate::decompress_to_vec(r)
+                    .map_err(|e| anyhow::anyhow!("decompression failed: {:?}", e))?;
 
                 ensure!(
-                    z.finish()?.is_empty(),
-                    "decompressed packet length is shorter than expected"
-                );
+        decompressed.len() == data_len as usize,
+        "decompressed packet length is shorter than expected"
+    );
+
+                // Update the decompression buffer.
+                self.decompress_buf.clear();
+                self.decompress_buf.extend_from_slice(&decompressed);
 
                 let total_packet_len = VarInt(packet_len).written_size() + packet_len as usize;
 
