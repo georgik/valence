@@ -1,5 +1,6 @@
 // use std::io::Write;
-// use embedded_io::Write;
+use embedded_io::Write;
+// use crate::writer::Writer;
 use crate::writer::Writer;
 use alloc::vec::Vec;
 #[cfg(feature = "encryption")]
@@ -331,6 +332,7 @@ where
     Ok(())
 }
 
+
 #[cfg(feature = "compression")]
 #[allow(clippy::needless_borrows_for_generic_args)]
 fn encode_packet_compressed<P>(buf: &mut Vec<u8>, pkt: &P, threshold: u32) -> anyhow::Result<()>
@@ -341,11 +343,16 @@ where
 
     let start_len = buf.len();
 
-    pkt.encode_with_id(&mut *buf)?;
+    // Wrap the buffer in VecWriter
+    let mut writer = crate::writer::Writer::new(buf);
+
+    pkt.encode_with_id(&mut writer)?;
 
     let data_len = buf.len() - start_len;
 
     if data_len > threshold as usize {
+        use miniz_oxide::deflate::compress_to_vec;
+
         // Compress the data using `miniz_oxide`.
         let compressed_data = compress_to_vec(&buf[start_len..], 4);
 
@@ -361,12 +368,15 @@ where
         // Clear the buffer for the new compressed data.
         buf.truncate(start_len);
 
+        // Create a writer for the buffer.
+        let mut writer = Writer::new(&mut *buf);
+
         // Write the packet length and compressed data length.
-        VarInt(packet_len as i32).encode(&mut *buf)?;
-        VarInt(data_len as i32).encode(&mut *buf)?;
+        VarInt(packet_len as i32).encode(&mut writer)?;
+        VarInt(data_len as i32).encode(&mut writer)?;
 
         // Append the compressed data.
-        buf.extend_from_slice(&compressed_data);
+        writer.write_all(&compressed_data)?;
     } else {
         let data_len_size = 1;
         let packet_len = data_len_size + data_len;

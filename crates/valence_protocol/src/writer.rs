@@ -92,7 +92,7 @@ impl<'a, B> Writer<'a, B> {
 
 // Implement ErrorType for Writer
 impl<'a> ErrorType for Writer<'a, BytesMut> {
-    type Error = core::convert::Infallible; // Use an appropriate error type if your implementation may fail
+    type Error = core::convert::Infallible; // Use `Infallible` if no errors are expected
 }
 
 // Implement Write for Writer
@@ -103,7 +103,26 @@ impl<'a> Write for Writer<'a, BytesMut> {
     }
 
     fn flush(&mut self) -> Result<(), Self::Error> {
-        // No-op for `BytesMut`, as it does not need flushing.
+        // No-op for `BytesMut`, as it doesn't require flushing.
+        Ok(())
+    }
+}
+use alloc::vec::Vec;
+
+// Implement ErrorType for Writer with `Vec<u8>`
+impl<'a> ErrorType for Writer<'a, Vec<u8>> {
+    type Error = core::convert::Infallible; // Use `Infallible` if no errors are expected
+}
+
+// Implement Write for Writer with `Vec<u8>`
+impl<'a> Write for Writer<'a, Vec<u8>> {
+    fn write(&mut self, buf: &[u8]) -> Result<usize, Self::Error> {
+        self.buf.extend_from_slice(buf);
+        Ok(buf.len())
+    }
+
+    fn flush(&mut self) -> Result<(), Self::Error> {
+        // No-op for `Vec<u8>`, as it doesn't require flushing.
         Ok(())
     }
 }

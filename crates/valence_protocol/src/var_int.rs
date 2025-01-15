@@ -174,7 +174,7 @@ impl VarInt {
     pub fn decode_partial<R: Read>(mut r: R) -> Result<i32, VarIntDecodeError> {
         let mut val = 0;
         for i in 0..Self::MAX_SIZE {
-            let byte = r.read_u8().map_err(|e| VarIntDecodeError::Incomplete)?;
+            let byte = r.read_u8().map_err(|_e| VarIntDecodeError::Incomplete)?;
             val |= (i32::from(byte) & 0b01111111) << (i * 7);
             if byte & 0b10000000 == 0 {
                 return Ok(val);
