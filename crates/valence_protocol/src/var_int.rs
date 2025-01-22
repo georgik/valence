@@ -171,10 +171,10 @@ impl VarInt {
     }
 
     /// Decodes a `VarInt` with partial input support.
-    pub fn decode_partial<R: Read>(mut r: R) -> Result<i32, VarIntDecodeError> {
+    pub fn decode_partial<R: Read>(r: &mut R) -> Result<i32, VarIntDecodeError> {
         let mut val = 0;
         for i in 0..Self::MAX_SIZE {
-            let byte = r.read_u8().map_err(|_e| VarIntDecodeError::Incomplete)?;
+            let byte = r.read_u8()?; // Read a single byte and advance cursor
             val |= (i32::from(byte) & 0b01111111) << (i * 7);
             if byte & 0b10000000 == 0 {
                 return Ok(val);
@@ -219,7 +219,6 @@ use esp_println::println;
 
 impl Decode<'_> for VarInt {
     fn decode(r: &mut &[u8]) -> anyhow::Result<Self> {
-        println!("r: {:?}", r);
         let mut val = 0;
         for i in 0..Self::MAX_SIZE {
             let byte = r.read_u8().map_err(|e| anyhow::Error::msg(format!("{:?}", e)))?;

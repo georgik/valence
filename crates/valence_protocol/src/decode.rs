@@ -2,6 +2,7 @@
 use aes::cipher::{generic_array::GenericArray, BlockDecryptMut, BlockSizeUser, KeyIvInit};
 use anyhow::{bail, ensure, Context};
 use bytes::{Buf, BytesMut};
+// use byteorder::ReadBytesExt;
 
 use crate::var_int::{VarInt, VarIntDecodeError};
 #[cfg(feature = "compression")]
@@ -35,7 +36,7 @@ impl PacketDecoder {
         let mut r = &self.buf[..];
 
         // Decode the packet length (VarInt)
-        let packet_len = match VarInt::decode_partial(r) {
+        let packet_len = match VarInt::decode_partial(&mut r) {
             Ok(len) => len,
             Err(VarIntDecodeError::Incomplete) => return Ok(None),
             Err(VarIntDecodeError::TooLarge) => bail!("malformed packet length VarInt"),
@@ -52,7 +53,7 @@ impl PacketDecoder {
         }
 
         let packet_len_len = VarInt(packet_len).written_size();
-        println!("packet_len_len: {}", packet_len_len);
+        println!("written_size: {}", packet_len_len);
 
         let mut data;
 
