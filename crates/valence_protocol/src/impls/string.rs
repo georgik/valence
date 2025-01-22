@@ -59,9 +59,7 @@ impl<'a, const MAX_CHARS: usize> Decode<'a> for Bounded<&'a str, MAX_CHARS> {
         );
 
         let (res, remaining) = r.split_at(len);
-        // let res = str::from_utf8(res)?;
-        // TODO
-        let res = "TODO";
+        let res = core::str::from_utf8(res)?;
 
         let char_count = res.encode_utf16().count();
         ensure!(

@@ -53,7 +53,6 @@ impl PacketDecoder {
         }
 
         let packet_len_len = VarInt(packet_len).written_size();
-        println!("written_size: {}", packet_len_len);
 
         let mut data;
 
@@ -63,14 +62,12 @@ impl PacketDecoder {
                 r = &r[..packet_len as usize];
 
                 let data_len = VarInt::decode(&mut r)?.0;
-                println!("data_len: {}", data_len);
 
                 ensure!(
                 (0..MAX_PACKET_SIZE).contains(&data_len),
                 "decompressed packet length of {data_len} is out of bounds"
             );
 
-                println!("threshold: {}", self.threshold.0);
                 // Check if the packet is compressed.
                 if data_len > 0 {
                     ensure!(
