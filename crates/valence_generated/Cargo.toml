@@ -24,4 +24,4 @@ quote.workspace = true
 serde = { workspace = true, default-features = false, features = ["derive", "alloc"] }
 serde_json.workspace = true
 valence_build_utils.workspace = true
-esp-alloc = "0.5.0"
+esp-alloc = "0.6.0"
