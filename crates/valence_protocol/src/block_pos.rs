@@ -55,8 +55,7 @@ impl Encode for BlockPos {
 
 impl Decode <'_> for BlockPos {
     fn decode(r: &mut &[u8]) -> anyhow::Result<Self> {
-        todo!("Decode BlockPos");
-        // PackedBlockPos::decode(r).map(Into::into)
+        PackedBlockPos::decode(r).map(Into::into)
     }
 
 }
