@@ -1,4 +1,5 @@
-use std::fmt;
+use core::fmt;
+use alloc::string::String;
 
 pub use ser::*;
 

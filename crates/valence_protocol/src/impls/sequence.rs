@@ -1,8 +1,14 @@
-use std::io::Write;
-use std::mem::{self, MaybeUninit};
-use std::slice;
 
+// use std::mem::{self, MaybeUninit};
+// use std::slice;
+use core::mem::MaybeUninit;
+use core::mem;
+use alloc::vec::Vec;
+use alloc::boxed::Box;
 use anyhow::ensure;
+use crate::Write;
+use core::any;
+use core::slice;
 
 use crate::impls::cautious_capacity;
 use crate::{Bounded, Decode, Encode, VarInt};
@@ -62,7 +68,7 @@ impl<T: Encode> Encode for [T] {
         ensure!(
             i32::try_from(len).is_ok(),
             "length of {} slice exceeds i32::MAX (got {len})",
-            std::any::type_name::<T>()
+            any::type_name::<T>()
         );
 
         VarInt(len as i32).encode(&mut w)?;
@@ -77,7 +83,7 @@ impl<T: Encode, const MAX_LEN: usize> Encode for Bounded<&'_ [T], MAX_LEN> {
         ensure!(
             len <= MAX_LEN,
             "length of {} slice exceeds max of {MAX_LEN} (got {len})",
-            std::any::type_name::<T>(),
+            any::type_name::<T>(),
         );
 
         VarInt(len as i32).encode(&mut w)?;

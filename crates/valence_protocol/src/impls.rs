@@ -1,6 +1,6 @@
 //! Implementations of [`Encode`](crate::Encode) and [`Decode`](crate::Decode)
 //! on foreign types.
-
+use core::mem;
 mod map;
 mod math;
 mod other;
@@ -10,7 +10,7 @@ mod sequence;
 mod string;
 mod tuple;
 
-use std::mem;
+// use std::mem;
 
 /// Prevents preallocating too much memory in case we get a malicious or invalid
 /// sequence length.

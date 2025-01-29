@@ -1,15 +1,28 @@
-use std::fmt;
-use std::io::Write;
-use std::ops::{Add, Sub};
+use core::fmt;
+use crate::Write;
+use crate::Encode;
+use crate::Decode;
 
 use anyhow::bail;
 use bitfield_struct::bitfield;
 use derive_more::From;
-use thiserror::Error;
+// use thiserror::Error;
 use valence_math::{DVec3, IVec3};
 
 use crate::direction::Direction;
-use crate::{Decode, Encode};
+use core::ops::Add;
+use core::ops::Sub;
+
+#[derive(Copy, Clone, PartialEq, Eq, Debug, From)]
+pub struct Error(pub BlockPos);
+
+impl fmt::Display for Error {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "block position of {:?} is out of range", self.0)
+    }
+}
+
+// impl core::error::Error for Error {}
 
 /// Represents an absolute block position in world space.
 #[derive(Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
@@ -78,7 +91,7 @@ impl Encode for BlockPos {
     fn encode(&self, w: impl Write) -> anyhow::Result<()> {
         match self.packed() {
             Ok(p) => p.encode(w),
-            Err(e) => bail!("{e}: {self}"),
+            Err(e) => bail!("err"),
         }
     }
 }
@@ -107,16 +120,16 @@ impl TryFrom<BlockPos> for PackedBlockPos {
     }
 }
 
-#[derive(Copy, Clone, PartialEq, Eq, Debug, Error, From)]
-#[error("block position of {0} is out of range")]
-pub struct Error(pub BlockPos);
+// #[derive(Copy, Clone, PartialEq, Eq, Debug, Error, From)]
+// #[error("block position of {0} is out of range")]
+// pub struct Error(pub BlockPos);
 
 impl From<DVec3> for BlockPos {
     fn from(pos: DVec3) -> Self {
         Self {
-            x: pos.x.floor() as i32,
-            y: pos.y.floor() as i32,
-            z: pos.z.floor() as i32,
+            x: pos.x as i32,
+            y: pos.y as i32,
+            z: pos.z as i32,
         }
     }
 }

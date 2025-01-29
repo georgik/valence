@@ -1,9 +1,14 @@
-use std::borrow::Cow;
-use std::hash::Hash;
-use std::iter::FusedIterator;
+use alloc::borrow::Cow;
+use alloc::vec::Vec;
+use core::hash::Hash;
+use core::iter::FusedIterator;
 
 use crate::value::{ValueMut, ValueRef};
 use crate::{Compound, Tag, Value};
+use esp_alloc as _;
+use alloc::vec;
+use alloc::string::String;
+use alloc::slice;
 
 /// An NBT list value.
 ///
@@ -670,18 +675,18 @@ pub struct IntoIter<S = String> {
 #[derive(Clone, Debug)]
 enum IntoIterInner<S> {
     End,
-    Byte(std::vec::IntoIter<i8>),
-    Short(std::vec::IntoIter<i16>),
-    Int(std::vec::IntoIter<i32>),
-    Long(std::vec::IntoIter<i64>),
-    Float(std::vec::IntoIter<f32>),
-    Double(std::vec::IntoIter<f64>),
-    ByteArray(std::vec::IntoIter<Vec<i8>>),
-    String(std::vec::IntoIter<S>),
-    List(std::vec::IntoIter<List<S>>),
-    Compound(std::vec::IntoIter<Compound<S>>),
-    IntArray(std::vec::IntoIter<Vec<i32>>),
-    LongArray(std::vec::IntoIter<Vec<i64>>),
+    Byte(vec::IntoIter<i8>),
+    Short(vec::IntoIter<i16>),
+    Int(vec::IntoIter<i32>),
+    Long(vec::IntoIter<i64>),
+    Float(vec::IntoIter<f32>),
+    Double(vec::IntoIter<f64>),
+    ByteArray(vec::IntoIter<Vec<i8>>),
+    String(vec::IntoIter<S>),
+    List(vec::IntoIter<List<S>>),
+    Compound(vec::IntoIter<Compound<S>>),
+    IntArray(vec::IntoIter<Vec<i32>>),
+    LongArray(vec::IntoIter<Vec<i64>>),
 }
 
 impl<S> Iterator for IntoIter<S> {
@@ -775,18 +780,18 @@ pub struct Iter<'a, S = String> {
 #[derive(Clone, Debug)]
 enum IterInner<'a, S> {
     End,
-    Byte(std::slice::Iter<'a, i8>),
-    Short(std::slice::Iter<'a, i16>),
-    Int(std::slice::Iter<'a, i32>),
-    Long(std::slice::Iter<'a, i64>),
-    Float(std::slice::Iter<'a, f32>),
-    Double(std::slice::Iter<'a, f64>),
-    ByteArray(std::slice::Iter<'a, Vec<i8>>),
-    String(std::slice::Iter<'a, S>),
-    List(std::slice::Iter<'a, List<S>>),
-    Compound(std::slice::Iter<'a, Compound<S>>),
-    IntArray(std::slice::Iter<'a, Vec<i32>>),
-    LongArray(std::slice::Iter<'a, Vec<i64>>),
+    Byte(slice::Iter<'a, i8>),
+    Short(slice::Iter<'a, i16>),
+    Int(slice::Iter<'a, i32>),
+    Long(slice::Iter<'a, i64>),
+    Float(slice::Iter<'a, f32>),
+    Double(slice::Iter<'a, f64>),
+    ByteArray(slice::Iter<'a, Vec<i8>>),
+    String(slice::Iter<'a, S>),
+    List(slice::Iter<'a, List<S>>),
+    Compound(slice::Iter<'a, Compound<S>>),
+    IntArray(slice::Iter<'a, Vec<i32>>),
+    LongArray(slice::Iter<'a, Vec<i64>>),
 }
 
 impl<'a, S> Iterator for Iter<'a, S> {
@@ -880,18 +885,18 @@ pub struct IterMut<'a, S = String> {
 #[derive(Debug)]
 enum IterMutInner<'a, S> {
     End,
-    Byte(std::slice::IterMut<'a, i8>),
-    Short(std::slice::IterMut<'a, i16>),
-    Int(std::slice::IterMut<'a, i32>),
-    Long(std::slice::IterMut<'a, i64>),
-    Float(std::slice::IterMut<'a, f32>),
-    Double(std::slice::IterMut<'a, f64>),
-    ByteArray(std::slice::IterMut<'a, Vec<i8>>),
-    String(std::slice::IterMut<'a, S>),
-    List(std::slice::IterMut<'a, List<S>>),
-    Compound(std::slice::IterMut<'a, Compound<S>>),
-    IntArray(std::slice::IterMut<'a, Vec<i32>>),
-    LongArray(std::slice::IterMut<'a, Vec<i64>>),
+    Byte(slice::IterMut<'a, i8>),
+    Short(slice::IterMut<'a, i16>),
+    Int(slice::IterMut<'a, i32>),
+    Long(slice::IterMut<'a, i64>),
+    Float(slice::IterMut<'a, f32>),
+    Double(slice::IterMut<'a, f64>),
+    ByteArray(slice::IterMut<'a, Vec<i8>>),
+    String(slice::IterMut<'a, S>),
+    List(slice::IterMut<'a, List<S>>),
+    Compound(slice::IterMut<'a, Compound<S>>),
+    IntArray(slice::IterMut<'a, Vec<i32>>),
+    LongArray(slice::IterMut<'a, Vec<i64>>),
 }
 
 impl<'a, S> Iterator for IterMut<'a, S> {

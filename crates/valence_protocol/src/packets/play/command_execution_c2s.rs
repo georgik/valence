@@ -1,5 +1,5 @@
 use crate::{Bounded, Decode, Encode, FixedBitSet, Packet, VarInt};
-
+use alloc::vec::Vec;
 #[derive(Clone, Debug, Encode, Decode, Packet)]
 pub struct CommandExecutionC2s<'a> {
     pub command: Bounded<&'a str, 256>,

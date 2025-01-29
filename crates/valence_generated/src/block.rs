@@ -1,8 +1,7 @@
 #![allow(clippy::all)] // TODO: block build script creates many warnings.
 
-use std::fmt;
-use std::fmt::Display;
-use std::iter::FusedIterator;
+
+use core::iter::FusedIterator;
 
 use valence_ident::{ident, Ident};
 

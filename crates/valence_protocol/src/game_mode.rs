@@ -1,12 +1,12 @@
-use std::io::Write;
 
+use crate::Write;
 use anyhow::bail;
-use bevy_ecs::prelude::*;
+// use bevy_ecs::prelude::*;
 use derive_more::{From, Into};
 
 use crate::{Decode, Encode};
 
-#[derive(Copy, Clone, PartialEq, Eq, Debug, Default, Encode, Decode, Component)]
+#[derive(Copy, Clone, PartialEq, Eq, Debug, Default, Encode, Decode)]
 pub enum GameMode {
     #[default]
     Survival,

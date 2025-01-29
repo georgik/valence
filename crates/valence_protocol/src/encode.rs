@@ -1,5 +1,8 @@
-use std::io::Write;
-
+// use std::io::Write;
+use embedded_io::Write;
+// use crate::writer::Writer;
+use crate::writer::Writer;
+use alloc::vec::Vec;
 #[cfg(feature = "encryption")]
 use aes::cipher::generic_array::GenericArray;
 #[cfg(feature = "encryption")]
@@ -26,6 +29,8 @@ pub struct PacketEncoder {
     #[cfg(feature = "encryption")]
     cipher: Option<Cipher>,
 }
+
+
 
 impl PacketEncoder {
     pub fn new() -> Self {
@@ -71,42 +76,38 @@ impl PacketEncoder {
 
         #[cfg(feature = "compression")]
         if self.threshold.0 >= 0 {
-            use std::io::Read;
-
-            use flate2::bufread::ZlibEncoder;
-            use flate2::Compression;
+            use miniz_oxide::deflate::compress_to_vec;
 
             if data_len > self.threshold.0 as usize {
-                let mut z = ZlibEncoder::new(&self.buf[start_len..], Compression::new(4));
+                // Compress the data using `miniz_oxide`
+                let compressed_data = compress_to_vec(&self.buf[start_len..], 6);
 
                 self.compress_buf.clear();
 
                 let data_len_size = VarInt(data_len as i32).written_size();
-
-                let packet_len = data_len_size + z.read_to_end(&mut self.compress_buf)?;
+                let packet_len = data_len_size + compressed_data.len();
 
                 ensure!(
-                    packet_len <= MAX_PACKET_SIZE as usize,
-                    "packet exceeds maximum length"
-                );
-
-                drop(z);
+            packet_len <= MAX_PACKET_SIZE as usize,
+            "packet exceeds maximum length"
+        );
 
                 self.buf.truncate(start_len);
 
                 let mut writer = (&mut self.buf).writer();
 
+                // Write packet length and compressed data length
                 VarInt(packet_len as i32).encode(&mut writer)?;
                 VarInt(data_len as i32).encode(&mut writer)?;
-                self.buf.extend_from_slice(&self.compress_buf);
+                self.buf.extend_from_slice(&compressed_data);
             } else {
                 let data_len_size = 1;
                 let packet_len = data_len_size + data_len;
 
                 ensure!(
-                    packet_len <= MAX_PACKET_SIZE as usize,
-                    "packet exceeds maximum length"
-                );
+            packet_len <= MAX_PACKET_SIZE as usize,
+            "packet exceeds maximum length"
+        );
 
                 let packet_len_size = VarInt(packet_len as i32).written_size();
 
@@ -140,7 +141,7 @@ impl PacketEncoder {
             .copy_within(start_len..start_len + data_len, start_len + packet_len_size);
 
         let front = &mut self.buf[start_len..];
-        VarInt(packet_len as i32).encode(front)?;
+        VarInt(packet_len as i32).encode(front).map_err(|e| anyhow::anyhow!("Invalid length: {}", e))?;
 
         Ok(())
     }
@@ -220,18 +221,18 @@ impl<W: WritePacket> WritePacket for &mut W {
     }
 }
 
-impl<T: WritePacket> WritePacket for bevy_ecs::world::Mut<'_, T> {
-    fn write_packet_fallible<P>(&mut self, packet: &P) -> anyhow::Result<()>
-    where
-        P: Packet + Encode,
-    {
-        self.as_mut().write_packet_fallible(packet)
-    }
-
-    fn write_packet_bytes(&mut self, bytes: &[u8]) {
-        self.as_mut().write_packet_bytes(bytes)
-    }
-}
+// impl<T: WritePacket> WritePacket for bevy_ecs::world::Mut<'_, T> {
+//     fn write_packet_fallible<P>(&mut self, packet: &P) -> anyhow::Result<()>
+//     where
+//         P: Packet + Encode,
+//     {
+//         self.as_mut().write_packet_fallible(packet)
+//     }
+//
+//     fn write_packet_bytes(&mut self, bytes: &[u8]) {
+//         self.as_mut().write_packet_bytes(bytes)
+//     }
+// }
 
 /// An implementor of [`WritePacket`] backed by a `Vec` mutable reference.
 ///
@@ -281,10 +282,16 @@ impl WritePacket for PacketWriter<'_> {
     }
 
     fn write_packet_bytes(&mut self, bytes: &[u8]) {
-        if let Err(e) = self.buf.write_all(bytes) {
+        // Wrap the buffer in a Writer
+        let mut writer = crate::writer::Writer::new(self.buf);
+
+        // Attempt to write all bytes to the buffer
+        if let Err(e) = writer.write_all(bytes) {
             warn!("failed to write packet bytes: {e:#}");
         }
     }
+
+
 }
 
 impl WritePacket for PacketEncoder {
@@ -306,7 +313,10 @@ where
 {
     let start_len = buf.len();
 
-    pkt.encode_with_id(&mut *buf)?;
+    // Wrap the buffer in VecWriter
+    let mut writer = crate::writer::Writer::new(buf);
+
+    pkt.encode_with_id(&mut writer)?;
 
     let packet_len = buf.len() - start_len;
 
@@ -329,42 +339,49 @@ where
     Ok(())
 }
 
+
 #[cfg(feature = "compression")]
 #[allow(clippy::needless_borrows_for_generic_args)]
 fn encode_packet_compressed<P>(buf: &mut Vec<u8>, pkt: &P, threshold: u32) -> anyhow::Result<()>
 where
     P: Packet + Encode,
 {
-    use std::io::Read;
-
-    use flate2::bufread::ZlibEncoder;
-    use flate2::Compression;
-
     let start_len = buf.len();
 
-    pkt.encode_with_id(&mut *buf)?;
+    // Wrap the buffer in VecWriter
+    let mut writer = crate::writer::Writer::new(buf);
+
+    pkt.encode_with_id(&mut writer)?;
 
     let data_len = buf.len() - start_len;
 
     if data_len > threshold as usize {
-        let mut z = ZlibEncoder::new(&buf[start_len..], Compression::new(4));
+        use miniz_oxide::deflate::compress_to_vec;
 
-        let mut scratch = vec![];
+        // Compress the data using `miniz_oxide`.
+        let compressed_data = compress_to_vec(&buf[start_len..], 4);
 
-        let packet_len = VarInt(data_len as i32).written_size() + z.read_to_end(&mut scratch)?;
+        // Calculate the packet length.
+        let data_len_size = VarInt(data_len as i32).written_size();
+        let packet_len = data_len_size + compressed_data.len();
 
         ensure!(
-            packet_len <= MAX_PACKET_SIZE as usize,
-            "packet exceeds maximum length"
-        );
+        packet_len <= MAX_PACKET_SIZE as usize,
+        "packet exceeds maximum length"
+    );
 
-        drop(z);
-
+        // Clear the buffer for the new compressed data.
         buf.truncate(start_len);
 
-        VarInt(packet_len as i32).encode(&mut *buf)?;
-        VarInt(data_len as i32).encode(&mut *buf)?;
-        buf.extend_from_slice(&scratch);
+        // Create a writer for the buffer.
+        let mut writer = Writer::new(&mut *buf);
+
+        // Write the packet length and compressed data length.
+        VarInt(packet_len as i32).encode(&mut writer)?;
+        VarInt(data_len as i32).encode(&mut writer)?;
+
+        // Append the compressed data.
+        writer.write_all(&compressed_data)?;
     } else {
         let data_len_size = 1;
         let packet_len = data_len_size + data_len;
@@ -375,14 +392,12 @@ where
         );
 
         let packet_len_size = VarInt(packet_len as i32).written_size();
-
         let data_prefix_len = packet_len_size + data_len_size;
 
         buf.put_bytes(0, data_prefix_len);
         buf.copy_within(start_len..start_len + data_len, start_len + data_prefix_len);
 
         let mut front = &mut buf[start_len..];
-
         VarInt(packet_len as i32).encode(&mut front)?;
         // Zero for no compression on this packet.
         VarInt(0).encode(front)?;

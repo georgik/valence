@@ -1,10 +1,12 @@
-use std::borrow::Cow;
-use std::io::Write;
+use alloc::borrow::Cow;
+
 
 use anyhow::bail;
 use valence_ident::Ident;
 
 use crate::{Decode, Encode, Packet, VarInt};
+use crate::Write;
+use alloc::vec::Vec;
 
 #[derive(Clone, PartialEq, Eq, Debug, Packet)]
 pub struct UnlockRecipesS2c<'a> {

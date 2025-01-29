@@ -1,9 +1,10 @@
-use std::borrow::Cow;
+use alloc::borrow::Cow;
 
 use uuid::Uuid;
 use valence_ident::Ident;
 
 use crate::{Decode, Encode, Packet, VarInt};
+use alloc::vec::Vec;
 
 #[derive(Clone, Debug, Encode, Decode, Packet)]
 pub struct EntityAttributesS2c<'a> {

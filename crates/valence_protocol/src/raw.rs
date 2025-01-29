@@ -1,8 +1,10 @@
-use std::io::Write;
-use std::mem;
 
+// use std::mem;
+use core::mem;
 use anyhow::ensure;
 use derive_more::{Deref, DerefMut, From, Into};
+use crate::Write;
+use alloc::format;
 
 use crate::{Bounded, Decode, Encode};
 
@@ -21,7 +23,7 @@ pub struct RawBytes<'a>(pub &'a [u8]);
 
 impl Encode for RawBytes<'_> {
     fn encode(&self, mut w: impl Write) -> anyhow::Result<()> {
-        Ok(w.write_all(self.0)?)
+        w.write_all(self.0).map_err(|e| anyhow::Error::msg(format!("{:?}", e)))
     }
 }
 

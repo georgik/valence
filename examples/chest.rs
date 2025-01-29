@@ -8,6 +8,10 @@ const CHEST_POS: [i32; 3] = [0, SPAWN_Y + 1, 3];
 
 pub fn main() {
     App::new()
+        .insert_resource(NetworkSettings {
+            connection_mode: ConnectionMode::Offline, // Set to offline mode
+            ..Default::default()
+        })
         .add_plugins(DefaultPlugins)
         .add_systems(Startup, setup)
         .add_systems(

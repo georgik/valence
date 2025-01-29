@@ -1,4 +1,4 @@
-use bevy_ecs::prelude::Component;
+// use bevy_ecs::prelude::Component;
 use bitfield_struct::bitfield;
 
 use crate::{Decode, Encode, Packet};
@@ -11,7 +11,7 @@ pub struct PlayerAbilitiesS2c {
 }
 
 #[bitfield(u8)]
-#[derive(PartialEq, Eq, Encode, Decode, Component)]
+#[derive(PartialEq, Eq, Encode, Decode)]
 pub struct PlayerAbilitiesFlags {
     pub invulnerable: bool,
     pub flying: bool,

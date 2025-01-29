@@ -1,13 +1,14 @@
-use std::io::Write;
 
+use crate::Write;
 use anyhow::Context;
 use uuid::Uuid;
 use valence_generated::block::{BlockEntityKind, BlockKind, BlockState};
 use valence_generated::item::ItemKind;
 use valence_ident::{Ident, IdentError};
 use valence_nbt::Compound;
-
+use crate::alloc::string::ToString;
 use crate::{Decode, Encode, VarInt};
+use alloc::format;
 
 impl<T: Encode> Encode for Option<T> {
     fn encode(&self, mut w: impl Write) -> anyhow::Result<()> {
@@ -43,9 +44,33 @@ impl<'a> Decode<'a> for Uuid {
     }
 }
 
+#[cfg(not(feature = "binary"))]
+fn custom_encode_to_binary(compound: &Compound, mut w: impl Write) -> anyhow::Result<()> {
+    // Example: Custom encoding logic for no_std environments
+    // Replace this with actual encoding logic based on your data format.
+    // TODO
+    // for (key, value) in compound.iter() {
+    //     // Write the key and value (you'll need to implement the actual encoding logic here).
+    //     write!(w, "{}: {}\n", key, value).map_err(|e| anyhow::anyhow!(e))?;
+    // }
+    Ok(())
+}
+
+#[cfg(feature = "binary")]
+use valence_nbt::to_binary;
+
 impl Encode for Compound {
     fn encode(&self, w: impl Write) -> anyhow::Result<()> {
-        Ok(valence_nbt::to_binary(self, w, "")?)
+        #[cfg(feature = "binary")]
+        {
+            // Use `to_binary` if the feature is available
+            valence_nbt::to_binary(self, w, "")
+        }
+        #[cfg(not(feature = "binary"))]
+        {
+            // Use the custom implementation for no_std
+            custom_encode_to_binary(self, w)
+        }
     }
 }
 
@@ -57,11 +82,45 @@ impl Decode<'_> for Compound {
             return Ok(Compound::new());
         }
 
-        // TODO: consider if we need to bound the input slice or add some other
-        // mitigation to prevent excessive memory usage on hostile input.
-        Ok(valence_nbt::from_binary(r)?.0)
+        #[cfg(feature = "binary")]
+        {
+            // Use `valence_nbt::from_binary` if the feature is enabled
+            valence_nbt::from_binary(r).map(|result| result.0)
+        }
+
+        #[cfg(not(feature = "binary"))]
+        {
+            // Use a custom decoding implementation if the feature is not enabled
+            custom_decode_from_binary(r)
+        }
     }
 }
+
+#[cfg(not(feature = "binary"))]
+fn custom_decode_from_binary(r: &mut &[u8]) -> anyhow::Result<Compound> {
+    // Placeholder for your custom decoding logic. Adapt as necessary to match the format.
+    let mut compound = Compound::new();
+
+    while !r.is_empty() {
+        // Example logic: Parse key-value pairs (adapt this to your NBT format)
+        let key_length = r[0] as usize;
+        *r = &r[1..];
+
+        let key = core::str::from_utf8(&r[..key_length])
+            .map_err(|e| anyhow::anyhow!("Invalid key: {}", e))?;
+        *r = &r[key_length..];
+
+        // Assuming values are stored as bytes; adapt based on actual data structure
+        let value = r[0];
+        *r = &r[1..];
+
+        // TODO
+        // compound.insert(key.to_string(), value.into());
+    }
+
+    Ok(compound)
+}
+
 
 impl<S: Encode> Encode for Ident<S> {
     fn encode(&self, w: impl Write) -> anyhow::Result<()> {

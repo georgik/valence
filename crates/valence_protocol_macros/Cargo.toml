@@ -19,3 +19,6 @@ proc-macro2.workspace = true
 quote.workspace = true
 syn = { workspace = true, features = ["full"] }
 heck.workspace = true
+
+[features]
+std = []

@@ -2,8 +2,11 @@ use proc_macro2::{Ident, Span, TokenStream};
 use quote::quote;
 use syn::spanned::Spanned;
 use syn::{parse2, Data, DeriveInput, Error, Fields, LitInt, Result};
-
+use alloc::vec::Vec;
+use crate::alloc::string::ToString;
 use crate::{add_trait_bounds, pair_variants_with_discriminants};
+use alloc::format;
+
 
 pub(super) fn derive_encode(item: TokenStream) -> Result<TokenStream> {
     let mut input = parse2::<DeriveInput>(item)?;
@@ -48,7 +51,7 @@ pub(super) fn derive_encode(item: TokenStream) -> Result<TokenStream> {
                 impl #impl_generics ::valence_protocol::__private::Encode for #input_name #ty_generics
                 #where_clause
                 {
-                    fn encode(&self, mut _w: impl ::std::io::Write) -> ::valence_protocol::__private::Result<()> {
+                    fn encode(&self, mut _w: impl ::valence_protocol::Write) -> ::valence_protocol::__private::Result<()> {
                         use ::valence_protocol::__private::{Encode, Context};
 
                         #encode_fields
@@ -146,7 +149,7 @@ pub(super) fn derive_encode(item: TokenStream) -> Result<TokenStream> {
                 impl #impl_generics ::valence_protocol::__private::Encode for #input_name #ty_generics
                 #where_clause
                 {
-                    fn encode(&self, mut _w: impl ::std::io::Write) -> ::valence_protocol::__private::Result<()> {
+                    fn encode(&self, mut _w: impl ::valence_protocol::Write) -> ::valence_protocol::__private::Result<()> {
                         use ::valence_protocol::__private::{Encode, VarInt, Context};
 
                         match self {

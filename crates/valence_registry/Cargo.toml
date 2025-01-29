@@ -12,11 +12,11 @@ license.workspace = true
 workspace = true
 
 [dependencies]
-bevy_app.workspace = true
-bevy_ecs.workspace = true
+#bevy_app.workspace = true
+#bevy_ecs.workspace = true
 indexmap.workspace = true
-serde_json.workspace = true
-serde.workspace = true
+serde_json = { version = "1.0.135", default-features = false, features = ["alloc"]}
+serde = { version = "1.0.217", default-features=false, features = ["derive", "alloc"] }
 tracing.workspace = true
 valence_protocol.workspace = true
 anyhow.workspace = true

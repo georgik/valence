@@ -1,6 +1,6 @@
-use std::borrow::Cow;
+use alloc::borrow::Cow;
 
-use bevy_ecs::prelude::*;
+// use bevy_ecs::prelude::*;
 use valence_text::Text;
 
 use crate::{Decode, Encode, Packet};
@@ -24,7 +24,9 @@ pub enum ObjectiveMode<'a> {
     },
 }
 
-#[derive(Copy, Clone, PartialEq, Eq, Debug, Encode, Decode, Component, Default)]
+
+
+#[derive(Copy, Clone, PartialEq, Eq, Debug, Encode, Decode, Default)]
 pub enum ObjectiveRenderType {
     /// Display the value as a number.
     #[default]

@@ -1,11 +1,12 @@
-use std::borrow::Cow;
-use std::io::Write;
+use alloc::borrow::Cow;
+
 
 use anyhow::bail;
 use valence_generated::block::BlockState;
 use valence_math::{DVec3, Vec3};
 
 use crate::{BlockPos, Decode, Encode, ItemStack, Packet, VarInt};
+use crate::Write;
 
 #[derive(Clone, Debug, Packet)]
 pub struct ParticleS2c<'a> {

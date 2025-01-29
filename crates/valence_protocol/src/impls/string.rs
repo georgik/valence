@@ -1,10 +1,16 @@
-use std::io::Write;
-use std::str::FromStr;
+
+// use std::str::FromStr;
+// use crate::Write;
+use crate::Write;
+use alloc::string::String;
+use alloc::boxed::Box;
+use core::str::FromStr;
 
 use anyhow::{ensure, Context};
 use valence_text::Text;
 
 use crate::{Bounded, Decode, Encode, VarInt};
+use alloc::format;
 
 const DEFAULT_MAX_STRING_CHARS: usize = 32767;
 const MAX_TEXT_CHARS: usize = 262144;
@@ -24,10 +30,16 @@ impl<const MAX_CHARS: usize> Encode for Bounded<&'_ str, MAX_CHARS> {
             "char count of string exceeds maximum (expected <= {MAX_CHARS}, got {char_count})"
         );
 
-        VarInt(self.len() as i32).encode(&mut w)?;
-        Ok(w.write_all(self.as_bytes())?)
+        // Encode the length of the string as a VarInt
+        VarInt(self.len() as i32).encode(&mut w).map_err(|e| e.context("encoding string length"))?;
+
+        // Write the string's byte content
+        w.write_all(self.as_bytes())
+            .map_err(|e| anyhow::Error::msg(format!("error writing string content: {:?}", e)))?;
+        Ok(())
     }
 }
+
 
 impl<'a> Decode<'a> for &'a str {
     fn decode(r: &mut &'a [u8]) -> anyhow::Result<Self> {
@@ -47,7 +59,7 @@ impl<'a, const MAX_CHARS: usize> Decode<'a> for Bounded<&'a str, MAX_CHARS> {
         );
 
         let (res, remaining) = r.split_at(len);
-        let res = std::str::from_utf8(res)?;
+        let res = core::str::from_utf8(res)?;
 
         let char_count = res.encode_utf16().count();
         ensure!(

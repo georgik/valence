@@ -1,9 +1,19 @@
-use std::fmt;
-use std::io::Write;
-
+use core::fmt;
 use bitfield_struct::bitfield;
 use derive_more::From;
-use thiserror::Error;
+use crate::Write;
+
+#[derive(Copy, Clone, PartialEq, Eq, Debug, From)]
+pub struct Error(pub ChunkSectionPos);
+
+impl fmt::Display for Error {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "chunk section position of {:?} is out of range", self.0)
+    }
+}
+
+#[cfg(feature = "std")]
+impl std::error::Error for Error {}
 
 use crate::{BiomePos, BlockPos, Decode, Encode};
 
@@ -33,14 +43,14 @@ impl ChunkSectionPos {
 }
 
 impl fmt::Display for ChunkSectionPos {
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         fmt::Debug::fmt(&(self.x, self.y, self.z), f)
     }
 }
 
 impl Encode for ChunkSectionPos {
     fn encode(&self, w: impl Write) -> anyhow::Result<()> {
-        self.packed()?.encode(w)
+        self.packed().unwrap().encode(w)
     }
 }
 
@@ -98,7 +108,3 @@ impl TryFrom<ChunkSectionPos> for PackedChunkSectionPos {
         pos.packed()
     }
 }
-
-#[derive(Copy, Clone, PartialEq, Eq, Debug, Error, From)]
-#[error("chunk section position of {0} is out of range")]
-pub struct Error(pub ChunkSectionPos);

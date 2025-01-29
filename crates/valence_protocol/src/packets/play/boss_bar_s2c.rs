@@ -1,6 +1,6 @@
-use std::borrow::Cow;
+use alloc::borrow::Cow;
 
-use bevy_ecs::prelude::Component;
+// use bevy_ecs::prelude::Component;
 use bitfield_struct::bitfield;
 use uuid::Uuid;
 use valence_text::Text;
@@ -55,7 +55,7 @@ pub enum BossBarDivision {
 
 /// The flags of a boss bar (darken sky, dragon bar, create fog).
 #[bitfield(u8)]
-#[derive(PartialEq, Eq, Encode, Decode, Component)]
+#[derive(PartialEq, Eq, Encode, Decode)]
 pub struct BossBarFlags {
     pub darken_sky: bool,
     pub dragon_bar: bool,

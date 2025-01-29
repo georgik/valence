@@ -1,5 +1,5 @@
-use std::borrow::Cow;
-use std::io::Write;
+use alloc::borrow::Cow;
+use crate::Write;
 
 use bitfield_struct::bitfield;
 use uuid::Uuid;
@@ -7,6 +7,7 @@ use valence_text::Text;
 
 use crate::profile::Property;
 use crate::{Decode, Encode, GameMode, Packet, VarInt};
+use alloc::vec;
 
 #[derive(Clone, Debug, Packet)]
 pub struct PlayerListS2c<'a> {

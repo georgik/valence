@@ -1,7 +1,8 @@
-use bevy_ecs::prelude::Component;
+// use bevy_ecs::prelude::Component;
 
 use super::team_s2c::TeamColor;
 use crate::{Decode, Encode, Packet};
+use crate::Write;
 
 #[derive(Copy, Clone, Debug, Encode, Decode, Packet)]
 pub struct ScoreboardDisplayS2c<'a> {
@@ -10,7 +11,7 @@ pub struct ScoreboardDisplayS2c<'a> {
 }
 
 /// Defines where a scoreboard is displayed.
-#[derive(Copy, Clone, PartialEq, Eq, Debug, Component, Default)]
+#[derive(Copy, Clone, PartialEq, Eq, Debug, Default)]
 pub enum ScoreboardPosition {
     /// Display the scoreboard in the player list (the one you see when you
     /// press tab), as a yellow number next to players' names.
@@ -25,7 +26,7 @@ pub enum ScoreboardPosition {
 }
 
 impl Encode for ScoreboardPosition {
-    fn encode(&self, w: impl std::io::Write) -> anyhow::Result<()> {
+    fn encode(&self, w: impl Write) -> anyhow::Result<()> {
         match self {
             ScoreboardPosition::List => 0_u8.encode(w),
             ScoreboardPosition::Sidebar => 1_u8.encode(w),

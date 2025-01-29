@@ -169,6 +169,10 @@ pub(crate) fn build() -> anyhow::Result<TokenStream> {
         .collect::<Vec<_>>();
 
     Ok(quote! {
+        extern crate alloc;
+        use alloc::vec;
+        use alloc::vec::Vec;
+
         use uuid::Uuid;
         use valence_ident::{Ident, ident};
         use super::attributes::{EntityAttribute, EntityAttributeOperation};

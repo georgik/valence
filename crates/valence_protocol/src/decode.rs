@@ -2,6 +2,8 @@
 use aes::cipher::{generic_array::GenericArray, BlockDecryptMut, BlockSizeUser, KeyIvInit};
 use anyhow::{bail, ensure, Context};
 use bytes::{Buf, BytesMut};
+// use byteorder::ReadBytesExt;
+use bytes::BufMut;
 
 use crate::var_int::{VarInt, VarIntDecodeError};
 #[cfg(feature = "compression")]
@@ -12,6 +14,7 @@ use crate::{Decode, Packet, MAX_PACKET_SIZE};
 /// operation.
 #[cfg(feature = "encryption")]
 type Cipher = cfb8::Decryptor<aes::Aes128>;
+use miniz_oxide::inflate::decompress_to_vec_zlib;
 
 #[derive(Default)]
 pub struct PacketDecoder {
@@ -24,6 +27,8 @@ pub struct PacketDecoder {
     cipher: Option<Cipher>,
 }
 
+use esp_println::{print, println};
+
 impl PacketDecoder {
     pub fn new() -> Self {
         Self::default()
@@ -32,19 +37,26 @@ impl PacketDecoder {
     pub fn try_next_packet(&mut self) -> anyhow::Result<Option<PacketFrame>> {
         let mut r = &self.buf[..];
 
+        // Decode the packet length (VarInt)
         let packet_len = match VarInt::decode_partial(&mut r) {
             Ok(len) => len,
-            Err(VarIntDecodeError::Incomplete) => return Ok(None),
-            Err(VarIntDecodeError::TooLarge) => bail!("malformed packet length VarInt"),
+            Err(VarIntDecodeError::Incomplete) => {
+                println!("Not enough data for packet length");
+                return Ok(None)
+            },
+            Err(VarIntDecodeError::TooLarge) => {
+                println!("Packet length too large");
+                return Err(anyhow::anyhow!("packet length is too large"))
+            }
         };
 
         ensure!(
-            (0..=MAX_PACKET_SIZE).contains(&packet_len),
-            "packet length of {packet_len} is out of bounds"
-        );
+        (0..=MAX_PACKET_SIZE).contains(&packet_len),
+        "packet length of {packet_len} is out of bounds"
+    );
 
         if r.len() < packet_len as usize {
-            // Not enough data arrived yet.
+            println!("Not enough data arrived yet, expecting {} bytes, r bytes {}", packet_len, r.len());
             return Ok(None);
         }
 
@@ -54,57 +66,49 @@ impl PacketDecoder {
 
         #[cfg(feature = "compression")]
         if self.threshold.0 >= 0 {
-            use std::io::Write;
-
-            use bytes::BufMut;
-            use flate2::write::ZlibDecoder;
 
             r = &r[..packet_len as usize];
 
             let data_len = VarInt::decode(&mut r)?.0;
 
             ensure!(
-                (0..MAX_PACKET_SIZE).contains(&data_len),
-                "decompressed packet length of {data_len} is out of bounds"
-            );
+        (0..MAX_PACKET_SIZE).contains(&data_len),
+        "decompressed packet length of {data_len} is out of bounds"
+    );
 
             // Is this packet compressed?
             if data_len > 0 {
                 ensure!(
-                    data_len > self.threshold.0,
-                    "decompressed packet length of {data_len} is <= the compression threshold of \
-                     {}",
-                    self.threshold.0
-                );
+            data_len > self.threshold.0,
+            "decompressed packet length of {data_len} is <= the compression threshold of \
+             {}",
+            self.threshold.0
+        );
 
-                debug_assert!(self.decompress_buf.is_empty());
-
-                self.decompress_buf.put_bytes(0, data_len as usize);
-
-                // TODO: use libdeflater or zune-inflate?
-                let mut z = ZlibDecoder::new(&mut self.decompress_buf[..]);
-
-                z.write_all(r)?;
+                // Decompress the data using `miniz_oxide`
+                let decompressed_data = decompress_to_vec_zlib(r)
+                    .map_err(|e| anyhow::anyhow!("failed to decompress packet: {:?}", e))?;
 
                 ensure!(
-                    z.finish()?.is_empty(),
-                    "decompressed packet length is shorter than expected"
-                );
+            decompressed_data.len() == data_len as usize,
+            "decompressed packet length is shorter than expected"
+        );
 
                 let total_packet_len = VarInt(packet_len).written_size() + packet_len as usize;
 
                 self.buf.advance(total_packet_len);
 
+                self.decompress_buf.extend_from_slice(&decompressed_data);
                 data = self.decompress_buf.split();
             } else {
                 debug_assert_eq!(data_len, 0);
 
                 ensure!(
-                    r.len() <= self.threshold.0 as usize,
-                    "uncompressed packet length of {} exceeds compression threshold of {}",
-                    r.len(),
-                    self.threshold.0
-                );
+            r.len() <= self.threshold.0 as usize,
+            "uncompressed packet length of {} exceeds compression threshold of {}",
+            r.len(),
+            self.threshold.0
+        );
 
                 let remaining_len = r.len();
 
@@ -136,6 +140,7 @@ impl PacketDecoder {
             body: data,
         }))
     }
+
 
     #[cfg(feature = "compression")]
     pub fn compression(&self) -> CompressionThreshold {

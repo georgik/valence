@@ -17,8 +17,8 @@ workspace = true
 anyhow.workspace = true
 async-trait.workspace = true
 base64.workspace = true
-bevy_app.workspace = true
-bevy_ecs.workspace = true
+#bevy_app.workspace = true
+#bevy_ecs.workspace = true
 bytes.workspace = true
 flume.workspace = true
 hmac.workspace = true
@@ -30,14 +30,18 @@ serde = { workspace = true, features = ["derive"] }
 serde_json.workspace = true
 sha1.workspace = true
 sha2.workspace = true
-thiserror.workspace = true
-tokio.workspace = true
+thiserror = { version = "1.0.59", default-features = false,  optional = true }
+#tokio.workspace = true
 tracing.workspace = true
 uuid.workspace = true
 valence_server.workspace = true
 valence_lang.workspace = true
+#valence_protocol = { workspace = true, features = [
+#    "encryption",
+#    "compression",
+#] }
 valence_protocol = { workspace = true, features = [
-    "encryption",
+#    "encryption",
     "compression",
 ] }
 
@@ -45,4 +49,5 @@ valence_protocol = { workspace = true, features = [
 workspace = true
 default-features = false
 # Avoid OpenSSL dependency on Linux.
-features = ["rustls-tls", "json"]
+#features = ["rustls-tls", "json"]
+features = [ "json"]

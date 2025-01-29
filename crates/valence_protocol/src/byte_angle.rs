@@ -1,8 +1,8 @@
-use std::f32::consts::TAU;
-use std::fmt;
-use std::io::Write;
-
+use core::fmt;
+use core::f32::consts::TAU;
+use crate::Write;
 use crate::{Decode, Encode};
+use libm::{fmodf, roundf};
 
 /// Represents an angle in steps of 1/256 of a full turn.
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -10,11 +10,11 @@ pub struct ByteAngle(pub u8);
 
 impl ByteAngle {
     pub fn from_degrees(f: f32) -> ByteAngle {
-        ByteAngle((f.rem_euclid(360.0) / 360.0 * 256.0).round() as u8)
+        ByteAngle((roundf((fmodf(f, 360.0) + 360.0) % 360.0 / 360.0 * 256.0)) as u8)
     }
 
     pub fn from_radians(f: f32) -> ByteAngle {
-        ByteAngle((f.rem_euclid(TAU) / TAU * 256.0).round() as u8)
+        ByteAngle((roundf((fmodf(f, TAU) + TAU) % TAU / TAU * 256.0)) as u8)
     }
 
     pub fn to_degrees(self) -> f32 {

@@ -1,5 +1,6 @@
-use std::borrow::Borrow;
-use std::fmt::Display;
+use core::fmt;
+use core::borrow::Borrow;
+use core::fmt::Display;
 
 use derive_more::{AsRef, Deref, DerefMut, From};
 
@@ -36,7 +37,7 @@ impl<T, const MAX: usize> Borrow<T> for Bounded<T, MAX> {
 }
 
 impl<T: Display, const MAX: usize> Display for Bounded<T, MAX> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         self.0.fmt(f)
     }
 }

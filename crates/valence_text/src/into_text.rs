@@ -1,6 +1,8 @@
 //! Provides the [`IntoText`] trait and implementations.
 
-use std::borrow::Cow;
+use alloc::borrow::Cow;
+use alloc::string::String;
+use crate::alloc::string::ToString;
 
 use super::{ClickEvent, Color, Font, HoverEvent, Text};
 

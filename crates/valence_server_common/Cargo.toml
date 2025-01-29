@@ -12,8 +12,8 @@ license.workspace = true
 workspace = true
 
 [dependencies]
-bevy_ecs.workspace = true
-bevy_app.workspace = true
+#bevy_ecs.workspace = true
+#bevy_app.workspace = true
 derive_more.workspace = true
 uuid.workspace = true
 rand.workspace = true

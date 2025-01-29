@@ -1,9 +1,9 @@
-use std::borrow::Cow;
+use alloc::borrow::Cow;
 
 use valence_text::Text;
 
 use crate::{Decode, Encode, Packet, VarInt};
-
+use alloc::vec::Vec;
 #[derive(Clone, Debug, Encode, Decode, Packet)]
 pub struct CommandSuggestionsS2c<'a> {
     pub id: VarInt,
